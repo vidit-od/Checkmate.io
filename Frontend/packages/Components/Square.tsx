@@ -4,10 +4,6 @@ import React from "react";
 interface piece{
     type: "pawn"|"rook"|"knight"|"bishop"|"queen"|"king";
     color : "black"|"white";
-    hints : {
-        x: Number,
-        y: Number,
-    }[];
 }
 
 interface SquareProps {
@@ -15,9 +11,10 @@ interface SquareProps {
     yPos: number; // Y position of the square
     piece?: piece;
     onClick?: () => void; // Optional click handler
+    hint?: Boolean
   }
 
-const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece}) =>{
+const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint}) =>{
     const [size,setSize] = useState<number>(0)
 
     useEffect(()=>{
@@ -29,7 +26,7 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece}) =>{
     },[])
     
     let colorCode = "";
-    if(piece){
+    if(piece?.color != undefined){
         colorCode = piece.color;
         colorCode = colorCode + piece.type
     }
@@ -49,8 +46,12 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece}) =>{
             </div>}
             
             {colorCode != "" && <div className="absolute w-full h-full left-0 top-0 bg-cover" style={{
-                backgroundImage : `url('./src/assets/${colorCode}.png')`
+                backgroundImage : `url('./src/assets/${colorCode}.png')`,
+                zIndex:1
             }}></div>}
+
+            {hint && colorCode != "" && <div className=" absolute h-full w-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-8 z-0 border-slate-700 opacity-30"></div> }
+            {hint && colorCode == "" && <div className=" absolute h-1/3 w-1/3 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-700 opacity-30 rounded-full"> </div>}
         </div> 
     
     )
