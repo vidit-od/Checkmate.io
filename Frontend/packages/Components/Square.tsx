@@ -1,19 +1,6 @@
 import { useEffect, useState } from "react"
 import React from "react";
-
-interface piece{
-    type: "pawn"|"rook"|"knight"|"bishop"|"queen"|"king";
-    color : "black"|"white";
-}
-
-interface SquareProps {
-    xPos: number; // X position of the square
-    yPos: number; // Y position of the square
-    piece?: piece;
-    onClick?: () => void; // Optional click handler
-    hint?: Boolean
-  }
-
+import { SquareProps } from "../../types/chess";
 const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint}) =>{
     const [size,setSize] = useState<number>(0)
 
