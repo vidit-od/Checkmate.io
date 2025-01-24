@@ -3,32 +3,113 @@ import Square from "./Square"
 import { piece,BoardType } from "../../types/chess";
 
 function Board(){
-
+    const isValidMove = (x: number, y: number): boolean => {
+        return x >= 0 && x < 8 && y >= 0 && y < 8;
+    };
+    
+    const calculateValidMoves = (x: number, y: number, piece: piece, board: BoardType): [number, number][] => {
+        const moves: [number,number][] = [];
+        const directions: [number, number][] = [];
+    
+        switch (piece.type) {
+            case 'pawn':
+                const forward = piece.color === 'white' ? -1 : 1;
+                if (isValidMove(x + forward, y) && !board.piece[x + forward][y]) {
+                    moves.push([x + forward, y]);
+                }
+                if ( board.piece[x + forward][y] == null && (x == 1 || x == 6) && isValidMove(x + 2*forward, y) && !board.piece[x + 2*forward][y]) {
+                    moves.push([x + 2*forward, y]);
+                }
+                if (isValidMove(x + forward, y - 1) && board.piece[x + forward][y - 1] != null && board.piece[x + forward][y - 1]?.color !== piece.color) {
+                    moves.push([x + forward, y - 1]);
+                }
+                if (isValidMove(x + forward, y + 1) && board.piece[x + forward][y + 1] != null && board.piece[x + forward][y + 1]?.color !== piece.color) {
+                    moves.push([x + forward, y + 1]);
+                }
+                break;
+    
+            case 'rook':
+                directions.push([1, 0], [-1, 0], [0, 1], [0, -1]);
+                break;
+    
+            case 'bishop':
+                directions.push([1, 1], [1, -1], [-1, 1], [-1, -1]);
+                break;
+    
+            case 'queen':
+                directions.push([1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]);
+                break;
+    
+            case 'knight':
+                const knightMoves = [
+                    [2, 1], [2, -1], [-2, 1], [-2, -1],
+                    [1, 2], [1, -2], [-1, 2], [-1, -2],
+                ];
+                knightMoves.forEach(([dx, dy]) => {
+                    if (isValidMove(x + dx, y + dy) && board.piece[x + dx][y + dy]?.color !== piece.color) {
+                        moves.push([x + dx, y + dy]);
+                    }
+                });
+                break;
+    
+            case 'king':
+                const Kingdirections = [
+                    [1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]
+                ];
+                Kingdirections.forEach(([dx, dy])=>{
+                    if (isValidMove(x + dx, y + dy) && board.piece[x + dx][y + dy]?.color !== piece.color) {
+                        moves.push([x + dx, y + dy]);
+                    }
+                });
+                break;
+        }
+    
+        // For sliding pieces (rook, bishop, queen)
+        directions.forEach(([dx, dy]) => {
+            let nx = x + dx;
+            let ny = y + dy;
+            while (isValidMove(nx, ny)) {
+                if (board.piece[nx][ny]) {
+                    if (board.piece[nx][ny]?.color !== piece.color) {
+                        moves.push([nx, ny]);
+                    }
+                    break;
+                }
+                moves.push([nx, ny]);
+                nx += dx;
+                ny += dy;
+            }
+        });
+    
+        return moves;
+    };
     const handleOnClick = (i:number,j:number, piece:piece|null)=>{
+        console.log(i,j);
         const curr = boardState.piece[i][j];
         // if Click same piece then deselect
         if(FocusPiece != null && FocusPiece.piece == curr && FocusPiece.x == i && FocusPiece.y == j){
             setFocusPiece(null);
-            console.log(null);
+            setValidMoves(null);
         }
         // click different square
         else{
-            // 
+            // click another piece;
             if(curr){
                 setFocusPiece({x:i,y:j,piece:curr});
-                console.log(curr.color, curr.type);
+                const moves = calculateValidMoves(i,j,curr,boardState);
+                setValidMoves(moves);
             }
+            // click empty square -> make move
             else if(FocusPiece != null){
-                console.log(`Move played from ${FocusPiece.x} , ${FocusPiece.y} to ${i},${j}`);
                 const newBoard = {
                     ...boardState,
                     piece: [...boardState.piece.map(row => [... row])]};
-                    
+
                 newBoard.piece[FocusPiece.x][FocusPiece.y] = null;
                 newBoard.piece[i][j] = FocusPiece.piece;
                 setBoardstate(newBoard);
                 setFocusPiece(null);
-                renderSquares();
+                setValidMoves(null);
             }
         }
     } 
@@ -67,12 +148,18 @@ function Board(){
 
     const [boardState,setBoardstate] = useState(initialBoardState);
     const [FocusPiece,setFocusPiece] = useState<{x:number , y : number , piece:piece}|null>(null);
+    const [validMoves,setValidMoves] = useState<[x:number , y : number][] | null>(null);
+
     const renderSquares = () =>{
         const square:JSX.Element[][] = []
         for(let i = 0; i < 8; i++){
             const row:JSX.Element[] = []
             for(let j = 0; j < 8; j++){
                 const piece = boardState.piece[i][j];
+                let hint:boolean = false;
+                validMoves?.map((move)=>{
+                    if(move[0] == i && move[1] == j)hint = true;
+                })
                 row.push(
                 <Square 
                     key={i*8 + j}
@@ -80,7 +167,7 @@ function Board(){
                     yPos={j}
                     onClick={()=> handleOnClick(i,j,piece)}
                     piece= {piece || null}
-                    hint={piece?.hint || false}
+                    hint={hint}
                 />);
             }
             square.push(row);
@@ -90,11 +177,10 @@ function Board(){
 
     useEffect(()=>{
         renderSquares();
-    },[boardState])
+    },[boardState,validMoves])
 
     useEffect(()=>{
         setBoardstate(initialBoardState);
-        console.log(initialBoardState.piece);
     },[])
     return (
        <div className="bg-cover bg-ChessBoard w-fit h-fit">

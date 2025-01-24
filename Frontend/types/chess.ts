@@ -1,7 +1,6 @@
 export interface piece{
     type: "pawn"|"rook"|"knight"|"bishop"|"queen"|"king";
     color : "black"|"white";
-    hint: Boolean
 }
 
 export interface SquareProps {
