@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import React from "react";
 import { SquareProps } from "../../types/chess";
-const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus}) =>{
+const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attacked}) =>{
     const [size,setSize] = useState<number>(0)
 
     useEffect(()=>{
@@ -34,7 +34,11 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus}) =>{
             
             {colorCode != "" && <div className="absolute w-full h-full left-0 top-0 bg-cover" style={{
                 backgroundImage : `url('./src/assets/${colorCode}.png')`,
-                backgroundColor:(focus) ?'rgba(255, 255, 51, 0.5)':'transparent',
+                backgroundColor:(focus) 
+                ?'rgba(255, 255, 51, 0.5)':
+                (attacked)
+                ?'rgba(255, 0, 0, 0.5)'
+                :'transparent',
                 zIndex:1
             }}></div>}
 

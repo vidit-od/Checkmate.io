@@ -82,6 +82,37 @@ function Board(){
     
         return moves;
     };
+    const isKingInCheck = (color : 'white' | 'black',board: BoardType)=>{
+        let kingPosition: [number, number] | null = null;
+        
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if (board.piece[i][j]?.type === "king" && board.piece[i][j]?.color === color) {
+                    kingPosition = [i, j];
+                    break;
+                }
+            }
+            if (kingPosition) break;
+        }
+
+        if(!kingPosition) return false;
+
+        // Check if any opponent piece can attack the king
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                const piece = board.piece[i][j];
+                if (piece && piece.color !== color) {
+                    const moves = calculateValidMoves(i, j, piece, board);
+                    if (moves.some(([x, y]) => x === kingPosition![0] && y === kingPosition![1])) {
+                        setUnderAttack({ x: kingPosition![0], y: kingPosition![1] });
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
     const handleOnClick = (i:number,j:number, piece:piece|null)=>{
         // do not allow out of turn moves;
         if(FocusPiece == null && piece?.color != Turn){
@@ -122,6 +153,9 @@ function Board(){
                     newBoard.piece[i][j] = FocusPiece.piece;
                     setBoardstate(newBoard);
                     setTurn((T) => (T == 'black')?'white' : 'black');
+                    if(!isKingInCheck(Turn === 'black'?'white':'black', newBoard)){
+                        setUnderAttack(null);
+                    }
                 }
                 setFocusPiece(null);
                 setValidMoves(null);
@@ -165,6 +199,7 @@ function Board(){
     const [FocusPiece,setFocusPiece] = useState<{x:number , y : number , piece:piece}|null>(null);
     const [validMoves,setValidMoves] = useState<[x:number , y : number][] | null>(null);
     const [Turn, setTurn] = useState<"black" | "white">("white");
+    const [UnderAttack,setUnderAttack] = useState<{x:number , y : number} | null>(null);
 
     const renderSquares = () =>{
         const square:JSX.Element[][] = []
@@ -191,6 +226,7 @@ function Board(){
                     piece= {piece || null}
                     hint={valid_hint}
                     focus={Focus}
+                    attacked={(UnderAttack != null && UnderAttack.x == i && UnderAttack.y == j)?true : false}
                 />);
             }
             square.push(row);

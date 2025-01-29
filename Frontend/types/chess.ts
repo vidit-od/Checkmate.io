@@ -10,6 +10,7 @@ export interface SquareProps {
     onClick?: () => void; // Optional click handler
     hint?: Boolean
     focus?: Boolean
+    attacked?: Boolean
   }
 
 export interface BoardType{
