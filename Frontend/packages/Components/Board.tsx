@@ -6,7 +6,6 @@ function Board(){
     const isValidMove = (x: number, y: number): boolean => {
         return x >= 0 && x < 8 && y >= 0 && y < 8;
     };
-    
     const calculateValidMoves = (x: number, y: number, piece: piece, board: BoardType): [number, number][] => {
         const moves: [number,number][] = [];
         const directions: [number, number][] = [];
@@ -84,6 +83,12 @@ function Board(){
         return moves;
     };
     const handleOnClick = (i:number,j:number, piece:piece|null)=>{
+        // do not allow out of turn moves;
+        if(FocusPiece == null && piece?.color != Turn){
+            setFocusPiece(null);
+            setValidMoves(null);
+            return;
+        }
         const curr = boardState.piece[i][j];
         // if Click same piece then deselect
         if(FocusPiece != null && FocusPiece.piece == curr && FocusPiece.x == i && FocusPiece.y == j){
@@ -93,7 +98,7 @@ function Board(){
         // click different square
         else{
             // click another piece;
-            if(curr){
+            if(curr && piece?.color == Turn){
                 setFocusPiece({x:i,y:j,piece:curr});
                 const moves = calculateValidMoves(i,j,curr,boardState);
                 setValidMoves(moves);
@@ -106,6 +111,8 @@ function Board(){
                         isCurrValid = true;
                     }
                 })
+                // if valid move then play; else reset Focus
+                // Change turn after each valid move played;
                 if(isCurrValid) {
                     const newBoard = {
                         ...boardState,
@@ -114,6 +121,7 @@ function Board(){
                     newBoard.piece[FocusPiece.x][FocusPiece.y] = null;
                     newBoard.piece[i][j] = FocusPiece.piece;
                     setBoardstate(newBoard);
+                    setTurn((T) => (T == 'black')?'white' : 'black');
                 }
                 setFocusPiece(null);
                 setValidMoves(null);
@@ -156,6 +164,7 @@ function Board(){
     const [boardState,setBoardstate] = useState(initialBoardState);
     const [FocusPiece,setFocusPiece] = useState<{x:number , y : number , piece:piece}|null>(null);
     const [validMoves,setValidMoves] = useState<[x:number , y : number][] | null>(null);
+    const [Turn, setTurn] = useState<"black" | "white">("white");
 
     const renderSquares = () =>{
         const square:JSX.Element[][] = []
@@ -168,7 +177,7 @@ function Board(){
                 validMoves?.map((move)=>{
                     if(move[0] == i && move[1] == j)valid_hint = true;
                 })
-
+                
                 let Focus:boolean = false;
                 if(i == FocusPiece?.x && j == FocusPiece.y){
                     Focus = true;
