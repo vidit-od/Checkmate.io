@@ -84,7 +84,6 @@ function Board(){
         return moves;
     };
     const handleOnClick = (i:number,j:number, piece:piece|null)=>{
-        console.log(i,j);
         const curr = boardState.piece[i][j];
         // if Click same piece then deselect
         if(FocusPiece != null && FocusPiece.piece == curr && FocusPiece.x == i && FocusPiece.y == j){
@@ -101,13 +100,21 @@ function Board(){
             }
             // click empty square -> make move
             else if(FocusPiece != null){
-                const newBoard = {
-                    ...boardState,
-                    piece: [...boardState.piece.map(row => [... row])]};
+                let isCurrValid = false;
+                validMoves?.map((coord,index) =>{
+                    if(i == coord[0] && j == coord[1]){
+                        isCurrValid = true;
+                    }
+                })
+                if(isCurrValid) {
+                    const newBoard = {
+                        ...boardState,
+                        piece: [...boardState.piece.map(row => [... row])]};
 
-                newBoard.piece[FocusPiece.x][FocusPiece.y] = null;
-                newBoard.piece[i][j] = FocusPiece.piece;
-                setBoardstate(newBoard);
+                    newBoard.piece[FocusPiece.x][FocusPiece.y] = null;
+                    newBoard.piece[i][j] = FocusPiece.piece;
+                    setBoardstate(newBoard);
+                }
                 setFocusPiece(null);
                 setValidMoves(null);
             }
@@ -156,10 +163,16 @@ function Board(){
             const row:JSX.Element[] = []
             for(let j = 0; j < 8; j++){
                 const piece = boardState.piece[i][j];
-                let hint:boolean = false;
+                // show all valid moves;
+                let valid_hint:boolean = false;
                 validMoves?.map((move)=>{
-                    if(move[0] == i && move[1] == j)hint = true;
+                    if(move[0] == i && move[1] == j)valid_hint = true;
                 })
+
+                let Focus:boolean = false;
+                if(i == FocusPiece?.x && j == FocusPiece.y){
+                    Focus = true;
+                }
                 row.push(
                 <Square 
                     key={i*8 + j}
@@ -167,7 +180,8 @@ function Board(){
                     yPos={j}
                     onClick={()=> handleOnClick(i,j,piece)}
                     piece= {piece || null}
-                    hint={hint}
+                    hint={valid_hint}
+                    focus={Focus}
                 />);
             }
             square.push(row);
