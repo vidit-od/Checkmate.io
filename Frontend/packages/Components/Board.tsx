@@ -79,7 +79,8 @@ function Board() {
                 ny += dy;
             }
         });
-        if (flag && UnderAttack != null) {
+        // handle checks by opponent
+        if (flag) {
             const newmoves: [number, number][] = [];
             
             // make deep copy; try the move; if causes no check voilation then add to new list;
@@ -91,7 +92,7 @@ function Board() {
 
                 TempBoard.piece[x][y] = null;
                 TempBoard.piece[i[0]][i[1]] = piece;
-                if (!isKingInCheck(Turn,TempBoard)) {
+                if (!isKingInCheck(Turn,TempBoard,true)) {
                     newmoves.push(i);
                 }
             });
@@ -114,7 +115,7 @@ function Board() {
 
         return kingPosition;
     }
-    const isKingInCheck = (color: 'white' | 'black', board: BoardType) => {
+    const isKingInCheck = (color: 'white' | 'black', board: BoardType, SelfCheck: Boolean) => {
         let kingPosition: [number, number] | null = null;
 
         kingPosition = FindKing(color, board);
@@ -127,7 +128,7 @@ function Board() {
                 if (piece && piece.color !== color) {
                     const moves = calculateValidMoves(i, j, piece, board, false);
                     if (moves.some(([x, y]) => x === kingPosition![0] && y === kingPosition![1])) {
-                        setUnderAttack({ x: kingPosition![0], y: kingPosition![1] });
+                        if(!SelfCheck) setUnderAttack({ x: kingPosition![0], y: kingPosition![1] });
                         return true;
                     }
                 }
@@ -177,7 +178,7 @@ function Board() {
                     newBoard.piece[i][j] = FocusPiece.piece;
                     setBoardstate(newBoard);
                     setTurn((T) => (T == 'black') ? 'white' : 'black');
-                    if (!isKingInCheck(Turn === 'black' ? 'white' : 'black', newBoard)) {
+                    if (!isKingInCheck(Turn === 'black' ? 'white' : 'black', newBoard, false)) {
                         setUnderAttack(null);
                     }
                 }
