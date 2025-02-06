@@ -181,13 +181,44 @@ function Board() {
                     if (!isKingInCheck(Turn === 'black' ? 'white' : 'black', newBoard, false)) {
                         setUnderAttack(null);
                     }
+                    else if(isCheckmate(newBoard)){
+                        console.log(Turn, 'won');
+                    }
                 }
                 setFocusPiece(null);
                 setValidMoves(null);
+
+                //isStalemate();
             }
         }
     }
+    const isCheckmate = (board : BoardType)=>{
+        const color = (Turn === 'black') ? 'white' : 'black';
+        for(let i = 0; i<8; i++){
+            for(let j = 0; j <8; j++){
+                const currPiece = board.piece[i][j];
+                if(currPiece?.color === color){
+                    console.log(i,j);
+                    const currMoves = calculateValidMoves(i,j,currPiece,board,true);
+                    const canEscape = currMoves.some((move) => {
+                        const newBoard: BoardType = {
+                            ...board,
+                            piece: board.piece.map(row => row.map(piece => piece ? { ...piece } : null))
+                        };
+                        newBoard.piece[i][j] = null;
+                        newBoard.piece[move[0]][move[1]] = currPiece;
+                        if(!isKingInCheck(color,newBoard,true)){
+                            return true;
+                        }
+                    })
 
+                    if(canEscape) return false;
+                }
+            }
+        }
+
+        return true;
+    }
     const initialBoardState: BoardType = {
         // Row 0 (Black's back rank)
         piece: [
