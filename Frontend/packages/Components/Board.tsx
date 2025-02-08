@@ -180,6 +180,12 @@ function Board() {
                     setTurn((T) => (T == 'black') ? 'white' : 'black');
                     if (!isKingInCheck(Turn === 'black' ? 'white' : 'black', newBoard, false)) {
                         setUnderAttack(null);
+                        // isCheckmate can be used to find stalemate as well; 
+                        // if under check then checkmate ;
+                        // if no check then check for stalemate;
+                        if(isCheckmate(newBoard)){
+                            console.log("Draw");
+                        }
                     }
                     else if(isCheckmate(newBoard)){
                         console.log(Turn, 'won');
@@ -187,8 +193,6 @@ function Board() {
                 }
                 setFocusPiece(null);
                 setValidMoves(null);
-
-                //isStalemate();
             }
         }
     }
@@ -198,7 +202,6 @@ function Board() {
             for(let j = 0; j <8; j++){
                 const currPiece = board.piece[i][j];
                 if(currPiece?.color === color){
-                    console.log(i,j);
                     const currMoves = calculateValidMoves(i,j,currPiece,board,true);
                     const canEscape = currMoves.some((move) => {
                         const newBoard: BoardType = {
