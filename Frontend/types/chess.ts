@@ -11,6 +11,7 @@ export interface SquareProps {
     hint?: Boolean
     focus?: Boolean
     attacked?: Boolean
+    promotion?: Boolean
   }
 
 export interface BoardType{

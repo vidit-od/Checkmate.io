@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Square from "./Square"
 import { piece, BoardType } from "../../types/chess";
+import Promotion from "./Promotion";
 
 function Board() {
     const isValidMove = (x: number, y: number): boolean => {
@@ -16,7 +17,13 @@ function Board() {
                 if (isValidMove(x + forward, y) && !board.piece[x + forward][y]) {
                     moves.push([x + forward, y]);
                 }
-                if (board.piece[x + forward][y] == null && (x == 1 || x == 6) && isValidMove(x + 2 * forward, y) && !board.piece[x + 2 * forward][y]) {
+                if ( x + forward >= 0 &&
+                    x + forward < board.piece.length &&
+                    board.piece[x + forward][y] == null &&
+                    (x == 1 || x == 6) && (x + 2*forward >=0) && 
+                    (x + 2*forward < 8)&& isValidMove(x + 2 * forward, y) && 
+                    !board.piece[x + 2 * forward][y]
+                ) {
                     moves.push([x + 2 * forward, y]);
                 }
                 if (isValidMove(x + forward, y - 1) && board.piece[x + forward][y - 1] != null && board.piece[x + forward][y - 1]?.color !== piece.color) {
@@ -139,7 +146,7 @@ function Board() {
     }
     const handleOnClick = (i: number, j: number, piece: piece | null) => {
         // do not allow out of turn moves;
-        if (FocusPiece == null && piece?.color != Turn) {
+        if ((FocusPiece == null && piece?.color != Turn) || isPromoted != null) {
             setFocusPiece(null);
             setValidMoves(null);
             return;
@@ -176,6 +183,10 @@ function Board() {
 
                     newBoard.piece[FocusPiece.x][FocusPiece.y] = null;
                     newBoard.piece[i][j] = FocusPiece.piece;
+
+                    if(FocusPiece.piece.type == 'pawn' && (FocusPiece.piece.color == 'white' && j == 7) || (FocusPiece.piece.color == 'black' && j == 0)){
+                        setPromoted({x:i, y:j})
+                    }
                     setBoardstate(newBoard);
                     setTurn((T) => (T == 'black') ? 'white' : 'black');
                     if (!isKingInCheck(Turn === 'black' ? 'white' : 'black', newBoard, false)) {
@@ -260,7 +271,7 @@ function Board() {
     const [validMoves, setValidMoves] = useState<[x: number, y: number][] | null>(null);
     const [Turn, setTurn] = useState<"black" | "white">("white");
     const [UnderAttack, setUnderAttack] = useState<{ x: number, y: number } | null>(null);
-
+    const [isPromoted, setPromoted] = useState<{x:number, y:number} | null>(null);
     const renderSquares = () => {
         const square: JSX.Element[][] = []
         for (let i = 0; i < 8; i++) {
@@ -277,6 +288,8 @@ function Board() {
                 if (i == FocusPiece?.x && j == FocusPiece.y) {
                     Focus = true;
                 }
+                let promote: boolean = false;
+                if(isPromoted != null && isPromoted.x == i && isPromoted.y == j) promote = true;
                 row.push(
                     <Square
                         key={i * 8 + j}
@@ -287,6 +300,7 @@ function Board() {
                         hint={valid_hint}
                         focus={Focus}
                         attacked={(UnderAttack != null && UnderAttack.x == i && UnderAttack.y == j) ? true : false}
+                        promotion = {promote}
                     />);
             }
             square.push(row);
