@@ -265,6 +265,22 @@ function Board() {
             ],
         ]
     };
+    const handlePromotion = (type:"rook" | "knight" | "bishop" | "queen")=>{
+        if(isPromoted == null) return;
+        console.log(type);
+        const newBoard: BoardType = {
+            ...boardState,
+            piece: boardState.piece.map(row => row.map(piece => piece ? { ...piece } : null))
+        };
+        const newpiece = newBoard.piece[isPromoted.x][isPromoted.y] ;
+        if(newpiece == null) return
+        newpiece.type = type;
+        
+        newBoard.piece[isPromoted.x][isPromoted.y] = newpiece;
+        setBoardstate(newBoard)
+        setPromoted(null)
+        isKingInCheck((Turn == 'black')?'white': "black",newBoard,true);
+    }
 
     const [boardState, setBoardstate] = useState(initialBoardState);
     const [FocusPiece, setFocusPiece] = useState<{ x: number, y: number, piece: piece } | null>(null);
@@ -288,8 +304,6 @@ function Board() {
                 if (i == FocusPiece?.x && j == FocusPiece.y) {
                     Focus = true;
                 }
-                let promote: boolean = false;
-                if(isPromoted != null && isPromoted.x == i && isPromoted.y == j) promote = true;
                 row.push(
                     <Square
                         key={i * 8 + j}
@@ -300,7 +314,8 @@ function Board() {
                         hint={valid_hint}
                         focus={Focus}
                         attacked={(UnderAttack != null && UnderAttack.x == i && UnderAttack.y == j) ? true : false}
-                        promotion = {promote}
+                        promotion = {isPromoted}
+                        onPromotion = {handlePromotion}
                     />);
             }
             square.push(row);

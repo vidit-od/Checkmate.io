@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import React from "react";
 import { SquareProps } from "../../types/chess";
 import Promotion from "./Promotion";
-const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attacked,promotion}) =>{
+const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attacked,promotion,onPromotion}) =>{
     const [size,setSize] = useState<number>(0)
 
     useEffect(()=>{
@@ -13,6 +13,11 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attac
         
     },[])
     
+    const handlePieceSelect = (pieceType: "rook" | "knight" | "bishop" | "queen")=>{
+        console.log(pieceType);
+        onPromotion(pieceType);
+    }
+
     let colorCode = "";
     if(piece?.color != undefined){
         colorCode = piece.color;
@@ -46,7 +51,7 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attac
             {hint && colorCode != "" && <div className=" absolute h-full w-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-8 z-0 border-slate-700 opacity-30"></div> }
             {hint && colorCode == "" && <div className=" absolute h-1/3 w-1/3 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-700 opacity-30 rounded-full"> </div>}
 
-            {promotion && piece && <Promotion color = {piece.color}/>}
+            {promotion != null && xPos == promotion.x && yPos == promotion.y && piece && <Promotion color = {piece.color} onPieceSelect={handlePieceSelect}/>}
         </div> 
     
     )

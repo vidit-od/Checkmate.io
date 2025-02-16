@@ -8,10 +8,11 @@ export interface SquareProps {
     yPos: number; // Y position of the square
     piece: piece|null;
     onClick?: () => void; // Optional click handler
-    hint?: Boolean
-    focus?: Boolean
-    attacked?: Boolean
-    promotion?: Boolean
+    hint?: Boolean;
+    focus?: Boolean;
+    attacked?: Boolean;
+    promotion: {x:number , y:number} | null;
+    onPromotion: (newPiece: "rook" | "knight" | "bishop" | "queen")=> void;
   }
 
 export interface BoardType{
