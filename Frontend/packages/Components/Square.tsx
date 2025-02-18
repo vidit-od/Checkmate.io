@@ -2,9 +2,16 @@ import { useEffect, useState } from "react"
 import React from "react";
 import { SquareProps } from "../../types/chess";
 import Promotion from "./Promotion";
+import { useRecoilState } from "recoil";
+import { boardStateAtom, isPromotedAtom, turnAtom, underAttackAtom } from "../atoms/atom";
 const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attacked,promotion,onPromotion}) =>{
     const [size,setSize] = useState<number>(0)
 
+    const [boardState, setBoardstate] = useRecoilState(boardStateAtom);
+    const [_UnderAttack, setUnderAttack] = useRecoilState<{ x: number, y: number } | null>(underAttackAtom);
+    const [Turn, _setTurn] = useRecoilState(turnAtom);
+    const [isPromoted, setPromoted] = useRecoilState<{x:number, y:number} | null>(isPromotedAtom);
+        
     useEffect(()=>{
         const TotalWidth = window.innerWidth;
         const TotalHeight = window.innerHeight - 70;
@@ -15,7 +22,7 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attac
     
     const handlePieceSelect = (pieceType: "rook" | "knight" | "bishop" | "queen")=>{
         console.log(pieceType);
-        onPromotion(pieceType);
+        onPromotion(pieceType,isPromoted,setPromoted,boardState,setBoardstate,Turn,setUnderAttack);
     }
 
     let colorCode = "";

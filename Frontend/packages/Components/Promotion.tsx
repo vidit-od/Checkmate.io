@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  } from "react";
 
 interface PromotionProps{
     color: "white" | "black";
@@ -6,7 +6,10 @@ interface PromotionProps{
 }
 const Promotion: React.FC<PromotionProps> = ({color, onPieceSelect})=>{
     return (
-        <div className=" absolute bg-white top-0 w-full h-max z-50 shadow-lg rounded-md shadow-black">
+        <div className={`absolute bg-white ${
+            color === "white"? "top-0" : "bottom-0"
+        }
+        bottom-0 w-full h-max z-50 shadow-lg rounded-md shadow-black`}>
             <div className=" p-0" onClick={() => onPieceSelect(`queen`)}>
                 <img src={`./src/assets/${color}queen.png`} alt="" />
             </div>

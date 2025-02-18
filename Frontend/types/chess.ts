@@ -11,8 +11,16 @@ export interface SquareProps {
     hint?: Boolean;
     focus?: Boolean;
     attacked?: Boolean;
-    promotion: {x:number , y:number} | null;
-    onPromotion: (newPiece: "rook" | "knight" | "bishop" | "queen")=> void;
+    promotion: {x:number , y:number} | null;onPromotion: (
+        type: "rook" | "knight" | "bishop" | "queen",
+        isPromoted: { x: number; y: number } | null,
+        setPromoted: (promo: { x: number; y: number } | null) => void,
+        boardState: BoardType,
+        setBoardState: (newState: BoardType) => void,
+        Turn: "black" | "white",
+        setUnderAttack: (attack: { x: number; y: number } | null) => void
+    ) => void;
+    
   }
 
 export interface BoardType{
