@@ -61,7 +61,7 @@ export const handleOnClick = (i: number,
                 newBoard.piece[FocusPiece.x][FocusPiece.y] = null;
                 newBoard.piece[i][j] = FocusPiece.piece;
                 ConvertMoves(FocusPiece.piece, i,j, Turn, MoveList, setMoveList);
-                if(FocusPiece.piece.type == 'pawn' && (FocusPiece.piece.color == 'white' && i == 0) || (FocusPiece.piece.color == 'black' && i == 7)){
+                if(FocusPiece.piece.type == 'pawn' && ((FocusPiece.piece.color == 'white' && i == 0) || (FocusPiece.piece.color == 'black' && i == 7))){
                     setPromoted({x:i, y:j})
                 }
                 setBoardstate(newBoard);

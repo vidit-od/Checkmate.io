@@ -73,10 +73,7 @@ function Board() {
     useEffect(() => {
         setBoardstate(initialBoardState);
     }, [])
-
-    useEffect(()=>{
-        console.log(MoveList);
-    },[MoveList])
+    
     return (
         <div className="bg-cover bg-ChessBoard w-fit h-fit">
             {renderSquares().map((row, rowIndex) => (
