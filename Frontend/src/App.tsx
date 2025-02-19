@@ -4,8 +4,8 @@ import SideBar from "../packages/SideBar"
 function App() {
   return (
     <>
-      <div className="h-screen w-screen flex bg-red-500">
-        <div className='grow-0'><SideBar/></div>
+      <div className="h-screen w-screen flex">
+        <div className='grow-0 bg-red-500'><SideBar/></div>
         <div className='grow'><ChessBoard/></div>
         
       </div>

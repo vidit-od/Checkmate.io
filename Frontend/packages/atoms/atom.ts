@@ -30,3 +30,8 @@ export const isPromotedAtom = atom<{ x: number; y: number } | null>({
     key: "isPromotedAtom",
     default: null,
   });
+
+export const MoveListAtom = atom<{ w: string; b: string | null}[]>({
+    key : "MovesAtom",
+    default:[],
+})

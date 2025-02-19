@@ -4,7 +4,7 @@ import {handleOnClick} from "../Helpers/Onclick"
 import {initialBoardState} from "../Helpers/InitialBoard"
 import {handlePromotion} from "../Helpers/HandlePromotion"
 import { useRecoilState } from "recoil";
-import { boardStateAtom, FocusPieceAtom, isPromotedAtom, turnAtom, underAttackAtom, validMovesAtom } from "../atoms/atom";
+import { boardStateAtom, FocusPieceAtom, isPromotedAtom, MoveListAtom, turnAtom, underAttackAtom, validMovesAtom } from "../atoms/atom";
 
 function Board() {
     const [boardState, setBoardstate] = useRecoilState(boardStateAtom);
@@ -13,7 +13,7 @@ function Board() {
     const [UnderAttack, setUnderAttack] = useRecoilState<{ x: number, y: number } | null>(underAttackAtom);
     const [Turn, setTurn] = useRecoilState(turnAtom);
     const [isPromoted, setPromoted] = useRecoilState<{x:number, y:number} | null>(isPromotedAtom);
-    
+    const [MoveList, setMoveList] = useRecoilState(MoveListAtom);
     const renderSquares = () => {
         const square: JSX.Element[][] = []
         for (let i = 0; i < 8; i++) {
@@ -48,7 +48,9 @@ function Board() {
                             setTurn,
                             isPromoted,
                             setPromoted,
-                            setUnderAttack
+                            setUnderAttack,
+                            MoveList,
+                            setMoveList
                         )
                         }
                         piece={piece || null}
@@ -71,6 +73,10 @@ function Board() {
     useEffect(() => {
         setBoardstate(initialBoardState);
     }, [])
+
+    useEffect(()=>{
+        console.log(MoveList);
+    },[MoveList])
     return (
         <div className="bg-cover bg-ChessBoard w-fit h-fit">
             {renderSquares().map((row, rowIndex) => (

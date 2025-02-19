@@ -2,6 +2,7 @@ import { piece, BoardType} from "../../types/chess";
 import {calculateValidMoves} from "./ValidMoves"
 import {isKingInCheck} from "./CheckKing"
 import {isCheckmate} from "./Checkmate"
+import {ConvertMoves} from "./ConvertMoves"
 
 export const handleOnClick = (i: number,
     j: number,
@@ -16,7 +17,9 @@ export const handleOnClick = (i: number,
     setTurn: (turn: "black" | "white") => void,
     isPromoted: { x: number; y: number } | null,
     setPromoted: (promo: { x: number; y: number } | null) => void,
-    setUnderAttack: (attack: { x: number; y: number } | null) => void) => {
+    setUnderAttack: (attack: { x: number; y: number } | null) => void,
+    MoveList: {w:string, b:string|null}[],
+    setMoveList : (movelist: {w:string , b: string|null}[]) => void) => {
        
     
     // do not allow out of turn moves;
@@ -57,7 +60,7 @@ export const handleOnClick = (i: number,
 
                 newBoard.piece[FocusPiece.x][FocusPiece.y] = null;
                 newBoard.piece[i][j] = FocusPiece.piece;
-
+                ConvertMoves(FocusPiece.piece, i,j, Turn, MoveList, setMoveList);
                 if(FocusPiece.piece.type == 'pawn' && (FocusPiece.piece.color == 'white' && i == 0) || (FocusPiece.piece.color == 'black' && i == 7)){
                     setPromoted({x:i, y:j})
                 }

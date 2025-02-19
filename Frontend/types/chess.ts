@@ -26,3 +26,7 @@ export interface SquareProps {
 export interface BoardType{
     piece: (piece|null)[][];
 }
+
+export interface MoveList{
+    list : {w:string, b: string|null}[]
+}
