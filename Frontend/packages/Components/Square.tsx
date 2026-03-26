@@ -45,7 +45,7 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attac
             </div>}
 
             {colorCode != "" && <div className="absolute w-full h-full left-0 top-0 bg-cover" style={{
-                backgroundImage : `url('./src/assets/${colorCode}.png')`,
+                backgroundImage : `url('/assets/${colorCode}.png')`,
                 backgroundColor:(focus)
                 ?'rgba(255, 255, 51, 0.5)':
                 (attacked)

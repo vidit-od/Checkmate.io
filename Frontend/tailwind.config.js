@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       backgroundImage:{
-        'ChessBoard': "url('/src/assets/ChessBoard.png')",
-        'WRook': "url('/src/assets/WhiteRook.png')"
+        'ChessBoard': "url('/assets/ChessBoard.png')",
+        'WRook': "url('/assets/WhiteRook.png')"
       },
       fontSize:{
         'xs' : "0.6rem"
