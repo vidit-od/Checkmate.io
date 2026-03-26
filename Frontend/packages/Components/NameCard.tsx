@@ -1,4 +1,3 @@
-import React from "react"
 function NameCard(){
     return (
        <>
@@ -6,7 +5,7 @@ function NameCard(){
             <div className="bg-black w-6 h-6 rounded-sm">.</div>
             <div className="mx-2"> Player</div>
         </div>
-       </> 
+       </>
     )
 }
 

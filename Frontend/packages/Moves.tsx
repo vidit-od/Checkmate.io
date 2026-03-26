@@ -1,6 +1,5 @@
 import { useRecoilState } from "recoil"
 import { MoveListAtom } from "./atoms/atom"
-import React from "react";
 
 function Moves(){
     const [MoveList] = useRecoilState(MoveListAtom);
@@ -12,8 +11,8 @@ function Moves(){
             </h1>
                 <div className="w-full border border-gray-600 rounded-lg overflow-hidden">
                 {MoveList.map((move, index) => (
-                <div key={index} 
-                    className={`flex justify-evenly text-white p-2 border-b border-gray-600 
+                <div key={index}
+                    className={`flex justify-evenly text-white p-2 border-b border-gray-600
                     ${index % 2 === 0 ? "bg-gray-800" : "bg-gray-700"}`}>
                     <p className="w-1/2 text-center">{move.w}</p>
                     <p className="w-1/2 text-center">{move.b}</p>

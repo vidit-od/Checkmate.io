@@ -1,9 +1,8 @@
-import React from "react"
 function SideBar(){
     return (
        <div className="bg-slate-300">
         sidebar
-        </div> 
+        </div>
     )
 }
 
