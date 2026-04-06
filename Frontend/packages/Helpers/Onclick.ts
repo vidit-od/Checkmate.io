@@ -39,7 +39,7 @@ export const handleOnClick = (i: number,
         // click another piece;
         if (curr && piece?.color == Turn) {
             setFocusPiece({ x: i, y: j, piece: curr });
-            const moves = calculateValidMoves(i, j, curr, boardState, true, Turn,setUnderAttack);
+            const moves = calculateValidMoves(i, j, curr, boardState, true, setUnderAttack);
             setValidMoves(moves);
         }
         // click empty square -> make move
@@ -53,6 +53,7 @@ export const handleOnClick = (i: number,
             // if valid move then play; else reset Focus
             // Change turn after each valid move played;
             if (isCurrValid) {
+                const opponentColor = Turn === 'black' ? 'white' : 'black';
                 const newBoard = {
                     ...boardState,
                     piece: [...boardState.piece.map(row => [...row])]
@@ -65,18 +66,18 @@ export const handleOnClick = (i: number,
                     setPromoted({x:i, y:j})
                 }
                 setBoardstate(newBoard);
-                setTurn(Turn === 'black' ? 'white' : 'black');
+                setTurn(opponentColor);
 
-                if (!isKingInCheck(Turn === 'black' ? 'white' : 'black', newBoard, false,Turn,setUnderAttack)) {
+                if (!isKingInCheck(opponentColor, newBoard, false, setUnderAttack)) {
                     setUnderAttack(null);
                     // isCheckmate can be used to find stalemate as well; 
                     // if under check then checkmate ;
                     // if no check then check for stalemate;
-                    if(isCheckmate(newBoard,Turn,setUnderAttack)){
+                    if(isCheckmate(newBoard, opponentColor, setUnderAttack)){
                         console.log("Draw");
                     }
                 }
-                else if(isCheckmate(newBoard,Turn,setUnderAttack)){
+                else if(isCheckmate(newBoard, opponentColor, setUnderAttack)){
                     console.log(Turn, 'won');
                 }
             }

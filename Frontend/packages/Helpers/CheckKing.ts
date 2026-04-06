@@ -16,7 +16,7 @@ export const FindKing = (color: 'white' | 'black', board: BoardType) => {
 
     return kingPosition;
 }
-export const isKingInCheck = (color: 'white' | 'black', board: BoardType, SelfCheck: Boolean,Turn: "black" | "white",setUnderAttack: (attack: { x: number; y: number } | null) => void) => {
+export const isKingInCheck = (color: 'white' | 'black', board: BoardType, selfCheck: boolean, setUnderAttack: (attack: { x: number; y: number } | null) => void) => {
     let kingPosition: [number, number] | null = null;
 
     kingPosition = FindKing(color, board);
@@ -27,9 +27,9 @@ export const isKingInCheck = (color: 'white' | 'black', board: BoardType, SelfCh
         for (let j = 0; j < 8; j++) {
             const piece = board.piece[i][j];
             if (piece && piece.color !== color) {
-                const moves = calculateValidMoves(i, j, piece, board, false, Turn, setUnderAttack);
+                const moves = calculateValidMoves(i, j, piece, board, false, setUnderAttack);
                 if (moves.some(([x, y]) => x === kingPosition![0] && y === kingPosition![1])) {
-                    if(!SelfCheck) setUnderAttack({ x: kingPosition![0], y: kingPosition![1] });
+                    if(!selfCheck) setUnderAttack({ x: kingPosition![0], y: kingPosition![1] });
                     return true;
                 }
             }

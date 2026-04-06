@@ -5,12 +5,12 @@ export const isValidMove = (x: number, y: number): boolean => {
     return x >= 0 && x < 8 && y >= 0 && y < 8;
 };
 
-export const calculateValidMoves = (x: number, y: number, piece: piece, board: BoardType, flag: boolean, Turn:"black" | "white", setUnderAttack: (attack: { x: number; y: number } | null) => void): [number, number][] => {
+export const calculateValidMoves = (x: number, y: number, piece: piece, board: BoardType, flag: boolean, setUnderAttack: (attack: { x: number; y: number } | null) => void): [number, number][] => {
     const moves: [number, number][] = [];
     const directions: [number, number][] = [];
 
     switch (piece.type) {
-        case 'pawn':
+        case 'pawn': {
             const forward = piece.color === 'white' ? -1 : 1;
             if (isValidMove(x + forward, y) && !board.piece[x + forward][y]) {
                 moves.push([x + forward, y]);
@@ -31,6 +31,7 @@ export const calculateValidMoves = (x: number, y: number, piece: piece, board: B
                 moves.push([x + forward, y + 1]);
             }
             break;
+        }
 
         case 'rook':
             directions.push([1, 0], [-1, 0], [0, 1], [0, -1]);
@@ -44,7 +45,7 @@ export const calculateValidMoves = (x: number, y: number, piece: piece, board: B
             directions.push([1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]);
             break;
 
-        case 'knight':
+        case 'knight': {
             const knightMoves = [
                 [2, 1], [2, -1], [-2, 1], [-2, -1],
                 [1, 2], [1, -2], [-1, 2], [-1, -2],
@@ -55,8 +56,9 @@ export const calculateValidMoves = (x: number, y: number, piece: piece, board: B
                 }
             });
             break;
+        }
 
-        case 'king':
+        case 'king': {
             const Kingdirections = [
                 [1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]
             ];
@@ -66,6 +68,7 @@ export const calculateValidMoves = (x: number, y: number, piece: piece, board: B
                 }
             });
             break;
+        }
     }
 
     // For sliding pieces (rook, bishop, queen)
@@ -97,7 +100,7 @@ export const calculateValidMoves = (x: number, y: number, piece: piece, board: B
 
             TempBoard.piece[x][y] = null;
             TempBoard.piece[i[0]][i[1]] = piece;
-            if (!isKingInCheck(Turn,TempBoard,true,Turn,setUnderAttack)) {
+            if (!isKingInCheck(piece.color, TempBoard, true, setUnderAttack)) {
                 newmoves.push(i);
             }
         });
