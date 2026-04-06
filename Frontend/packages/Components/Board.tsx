@@ -36,26 +36,33 @@ function Board() {
                         key={i * 8 + j}
                         xPos={i}
                         yPos={j}
-                        onClick={() => handleOnClick(
-                            i,
-                            j,
-                            piece,boardState,
-                            setBoardstate,
-                            FocusPiece,
-                            setFocusPiece,
-                            validMoves,
-                            setValidMoves,
-                            Turn,
-                            setTurn,
-                            isPromoted,
-                            setPromoted,
-                            setUnderAttack,
-                            MoveList,
-                            setMoveList,
-                            gameStatus,
-                            setGameStatus
-                        )
-                        }
+                        onClick={() => {
+                            const resolution = handleOnClick({
+                                x: i,
+                                y: j,
+                                piece,
+                                boardState,
+                                focusPiece: FocusPiece,
+                                validMoves,
+                                turn: Turn,
+                                isPromoted,
+                                moveList: MoveList,
+                                gameStatus,
+                            });
+
+                            setBoardstate(resolution.boardState);
+                            setFocusPiece(resolution.focusPiece);
+                            setValidMoves(resolution.validMoves);
+                            setTurn(resolution.turn);
+                            setPromoted(resolution.promotion);
+                            setUnderAttack(resolution.underAttack);
+                            setMoveList(resolution.moveList);
+                            setGameStatus(resolution.gameStatus);
+
+                            if (resolution.winnerMessage) {
+                                console.log(resolution.winnerMessage);
+                            }
+                        }}
                         piece={piece || null}
                         hint={valid_hint}
                         focus={Focus}

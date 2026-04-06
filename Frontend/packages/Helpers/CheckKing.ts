@@ -1,4 +1,4 @@
-import {BoardType } from "../../types/chess";
+import {BoardType, Position } from "../../types/chess";
 import {calculateValidMoves} from "./ValidMoves";
 
 export const FindKing = (color: 'white' | 'black', board: BoardType) => {
@@ -16,25 +16,31 @@ export const FindKing = (color: 'white' | 'black', board: BoardType) => {
 
     return kingPosition;
 }
-export const isKingInCheck = (color: 'white' | 'black', board: BoardType, selfCheck: boolean, setUnderAttack: (attack: { x: number; y: number } | null) => void) => {
-    let kingPosition: [number, number] | null = null;
-
-    kingPosition = FindKing(color, board);
-    if (!kingPosition) return false;
+export const getCheckState = (color: 'white' | 'black', board: BoardType): { inCheck: boolean; underAttack: Position | null } => {
+    const kingPosition = FindKing(color, board);
+    if (!kingPosition) {
+        return { inCheck: false, underAttack: null };
+    }
 
     // Check if any opponent piece can attack the king
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             const piece = board.piece[i][j];
             if (piece && piece.color !== color) {
-                const moves = calculateValidMoves(i, j, piece, board, false, setUnderAttack);
+                const moves = calculateValidMoves(i, j, piece, board, false);
                 if (moves.some(([x, y]) => x === kingPosition![0] && y === kingPosition![1])) {
-                    if(!selfCheck) setUnderAttack({ x: kingPosition![0], y: kingPosition![1] });
-                    return true;
+                    return {
+                        inCheck: true,
+                        underAttack: { x: kingPosition[0], y: kingPosition[1] },
+                    };
                 }
             }
         }
     }
 
-    return false;
+    return { inCheck: false, underAttack: null };
+}
+
+export const isKingInCheck = (color: 'white' | 'black', board: BoardType) => {
+    return getCheckState(color, board).inCheck;
 }

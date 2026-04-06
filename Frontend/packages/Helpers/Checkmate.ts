@@ -1,13 +1,13 @@
-import { BoardType } from "../../types/chess";
+import { BoardType, GameEvaluation } from "../../types/chess";
 import {calculateValidMoves} from "./ValidMoves";
-import {isKingInCheck} from "./CheckKing"
+import {getCheckState, isKingInCheck} from "./CheckKing"
 
-export const hasLegalMoves = (board : BoardType, defendingColor : "white"| "black", setUnderAttack: (attack: { x: number; y: number } | null) => void)=>{
+export const hasLegalMoves = (board : BoardType, defendingColor : "white"| "black")=>{
     for(let i = 0; i<8; i++){
         for(let j = 0; j <8; j++){
             const currPiece = board.piece[i][j];
             if(currPiece?.color === defendingColor){
-                const currMoves = calculateValidMoves(i,j,currPiece,board,true, setUnderAttack);
+                const currMoves = calculateValidMoves(i,j,currPiece,board,true);
                 const canEscape = currMoves.some((move) => {
                     const newBoard: BoardType = {
                         ...board,
@@ -15,7 +15,7 @@ export const hasLegalMoves = (board : BoardType, defendingColor : "white"| "blac
                     };
                     newBoard.piece[i][j] = null;
                     newBoard.piece[move[0]][move[1]] = currPiece;
-                    if(!isKingInCheck(defendingColor, newBoard, true, setUnderAttack)){
+                    if(!isKingInCheck(defendingColor, newBoard)){
                         return true;
                     }
                     return false;
@@ -29,25 +29,27 @@ export const hasLegalMoves = (board : BoardType, defendingColor : "white"| "blac
     return false;
 }
 
-export const isCheckmate = (board : BoardType, defendingColor : "white"| "black", setUnderAttack: (attack: { x: number; y: number } | null) => void)=>{
-    return isKingInCheck(defendingColor, board, true, setUnderAttack) && !hasLegalMoves(board, defendingColor, setUnderAttack);
+export const isCheckmate = (board : BoardType, defendingColor : "white"| "black")=>{
+    return isKingInCheck(defendingColor, board) && !hasLegalMoves(board, defendingColor);
 }
 
-export const isStalemate = (board : BoardType, defendingColor : "white"| "black", setUnderAttack: (attack: { x: number; y: number } | null) => void)=>{
-    return !isKingInCheck(defendingColor, board, true, setUnderAttack) && !hasLegalMoves(board, defendingColor, setUnderAttack);
+export const isStalemate = (board : BoardType, defendingColor : "white"| "black")=>{
+    return !isKingInCheck(defendingColor, board) && !hasLegalMoves(board, defendingColor);
 }
 
-export const getGameStatus = (board : BoardType, defendingColor : "white"| "black", setUnderAttack: (attack: { x: number; y: number } | null) => void) => {
-    const inCheck = isKingInCheck(defendingColor, board, false, setUnderAttack);
-    const canMove = hasLegalMoves(board, defendingColor, setUnderAttack);
-
-    if (!inCheck) {
-        setUnderAttack(null);
-    }
+export const getGameStatus = (board : BoardType, defendingColor : "white"| "black"): GameEvaluation => {
+    const { inCheck, underAttack } = getCheckState(defendingColor, board);
+    const canMove = hasLegalMoves(board, defendingColor);
 
     if (!canMove) {
-        return inCheck ? "checkmate" : "stalemate";
+        return {
+            status: inCheck ? "checkmate" : "stalemate",
+            underAttack: inCheck ? underAttack : null,
+        };
     }
 
-    return inCheck ? "check" : "playing";
+    return {
+        status: inCheck ? "check" : "playing",
+        underAttack: inCheck ? underAttack : null,
+    };
 }

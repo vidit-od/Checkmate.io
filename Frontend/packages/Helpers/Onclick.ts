@@ -1,88 +1,106 @@
-import { piece, BoardType, GameStatus} from "../../types/chess";
+import { ClickHandlerArgs, ClickResolution } from "../../types/chess";
 import {calculateValidMoves} from "./ValidMoves"
 import {getGameStatus} from "./Checkmate"
 import {ConvertMoves} from "./ConvertMoves"
 
-export const handleOnClick = (i: number,
-    j: number,
-    piece: piece | null,
-    boardState: BoardType,
-    setBoardstate: (newState: BoardType) => void,
-    FocusPiece: { x: number; y: number; piece: piece } | null,
-    setFocusPiece: (focus: { x: number; y: number; piece: piece } | null) => void,
-    validMoves: [number, number][] | null,
-    setValidMoves: (moves: [number, number][] | null) => void,
-    Turn: 'black' | 'white',
-    setTurn: (turn: "black" | "white") => void,
-    isPromoted: { x: number; y: number } | null,
-    setPromoted: (promo: { x: number; y: number } | null) => void,
-    setUnderAttack: (attack: { x: number; y: number } | null) => void,
-    MoveList: {w:string, b:string|null}[],
-    setMoveList : (movelist: {w:string , b: string|null}[]) => void,
-    gameStatus: GameStatus,
-    setGameStatus: (status: GameStatus) => void) => {
+export const handleOnClick = ({
+    x,
+    y,
+    piece,
+    boardState,
+    focusPiece,
+    validMoves,
+    turn,
+    isPromoted,
+    moveList,
+    gameStatus,
+}: ClickHandlerArgs): ClickResolution => {
+    const resetSelection = (): ClickResolution => ({
+        boardState,
+        focusPiece: null,
+        validMoves: null,
+        turn,
+        promotion: isPromoted,
+        underAttack: null,
+        moveList,
+        gameStatus,
+        winnerMessage: null,
+    });
 
     // if Game is over we do nothing;
     if (gameStatus === "checkmate" || gameStatus === "stalemate") {
-        setFocusPiece(null);
-        setValidMoves(null);
-        return;
+        return {
+            ...resetSelection(),
+            underAttack: null,
+        };
     }
     // do not allow out of turn moves;
-    if ((FocusPiece == null && piece?.color != Turn) || isPromoted != null) {
-        setFocusPiece(null);
-        setValidMoves(null);
-        return;
+    if ((focusPiece == null && piece?.color != turn) || isPromoted != null) {
+        return resetSelection();
     }
-    const curr = boardState.piece[i][j];
+    const curr = boardState.piece[x][y];
     // if Click same piece then deselect
-    if (FocusPiece != null && FocusPiece.piece == curr && FocusPiece.x == i && FocusPiece.y == j) {
-        setFocusPiece(null);
-        setValidMoves(null);
+    if (focusPiece != null && focusPiece.piece == curr && focusPiece.x == x && focusPiece.y == y) {
+        return {
+            ...resetSelection(),
+            underAttack: null,
+        };
     }
     // click different square
-    else {
-        // click another piece;
-        if (curr && piece?.color == Turn) {
-            setFocusPiece({ x: i, y: j, piece: curr });
-            const moves = calculateValidMoves(i, j, curr, boardState, true, setUnderAttack);
-            setValidMoves(moves);
-        }
-        // click empty square -> make move
-        else if (FocusPiece != null) {
-            let isCurrValid = false;
-            validMoves?.map((coord) => {
-                if (i == coord[0] && j == coord[1]) {
-                    isCurrValid = true;
-                }
-            })
-            // if valid move then play; else reset Focus
-            // Change turn after each valid move played;
-            if (isCurrValid) {
-                const opponentColor = Turn === 'black' ? 'white' : 'black';
-                const newBoard = {
-                    ...boardState,
-                    piece: [...boardState.piece.map(row => [...row])]
-                };
-
-                newBoard.piece[FocusPiece.x][FocusPiece.y] = null;
-                newBoard.piece[i][j] = FocusPiece.piece;
-                ConvertMoves(FocusPiece.piece, i,j, Turn, MoveList, setMoveList);
-                if(FocusPiece.piece.type == 'pawn' && ((FocusPiece.piece.color == 'white' && i == 0) || (FocusPiece.piece.color == 'black' && i == 7))){
-                    setPromoted({x:i, y:j})
-                }
-                setBoardstate(newBoard);
-                setTurn(opponentColor);
-                const gameStatus = getGameStatus(newBoard, opponentColor, setUnderAttack);
-                setGameStatus(gameStatus);
-                if (gameStatus === "checkmate") {
-                    console.log(Turn, 'won');
-                } else if (gameStatus === "stalemate") {
-                    console.log("Draw");
-                }
-            }
-            setFocusPiece(null);
-            setValidMoves(null);
-        }
+    // click another piece;
+    if (curr && piece?.color == turn) {
+        return {
+            boardState,
+            focusPiece: { x, y, piece: curr },
+            validMoves: calculateValidMoves(x, y, curr, boardState, true),
+            turn,
+            promotion: isPromoted,
+            underAttack: null,
+            moveList,
+            gameStatus,
+            winnerMessage: null,
+        };
     }
+    // click empty square -> make move
+    if (focusPiece != null) {
+        const isCurrValid = validMoves?.some((coord) => x == coord[0] && y == coord[1]) ?? false;
+        // if valid move then play; else reset Focus
+        // Change turn after each valid move played;
+        if (isCurrValid) {
+            const opponentColor = turn === 'black' ? 'white' : 'black';
+            const newBoard = {
+                ...boardState,
+                piece: [...boardState.piece.map(row => [...row])]
+            };
+
+            newBoard.piece[focusPiece.x][focusPiece.y] = null;
+            newBoard.piece[x][y] = focusPiece.piece;
+
+            const nextMoveList = ConvertMoves(focusPiece.piece, x, y, turn, moveList);
+            const isPromotionMove = focusPiece.piece.type == 'pawn' && ((focusPiece.piece.color == 'white' && x == 0) || (focusPiece.piece.color == 'black' && x == 7));
+            const evaluation = getGameStatus(newBoard, opponentColor);
+
+            return {
+                boardState: newBoard,
+                focusPiece: null,
+                validMoves: null,
+                turn: opponentColor,
+                promotion: isPromotionMove ? {x, y} : null,
+                underAttack: evaluation.underAttack,
+                moveList: nextMoveList,
+                gameStatus: evaluation.status,
+                winnerMessage: evaluation.status === "checkmate" ? `${turn} won` : evaluation.status === "stalemate" ? "Draw" : null,
+            };
+        }
+
+        return {
+            ...resetSelection(),
+            underAttack: null,
+        };
+    }
+
+    return {
+        ...resetSelection(),
+        underAttack: null,
+    };
 }

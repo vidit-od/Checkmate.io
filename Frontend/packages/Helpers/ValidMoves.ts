@@ -5,7 +5,7 @@ export const isValidMove = (x: number, y: number): boolean => {
     return x >= 0 && x < 8 && y >= 0 && y < 8;
 };
 
-export const calculateValidMoves = (x: number, y: number, piece: piece, board: BoardType, flag: boolean, setUnderAttack: (attack: { x: number; y: number } | null) => void): [number, number][] => {
+export const calculateValidMoves = (x: number, y: number, piece: piece, board: BoardType, flag: boolean): [number, number][] => {
     const moves: [number, number][] = [];
     const directions: [number, number][] = [];
 
@@ -100,7 +100,7 @@ export const calculateValidMoves = (x: number, y: number, piece: piece, board: B
 
             TempBoard.piece[x][y] = null;
             TempBoard.piece[i[0]][i[1]] = piece;
-            if (!isKingInCheck(piece.color, TempBoard, true, setUnderAttack)) {
+            if (!isKingInCheck(piece.color, TempBoard)) {
                 newmoves.push(i);
             }
         });

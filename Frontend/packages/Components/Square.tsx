@@ -24,7 +24,23 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attac
 
     const handlePieceSelect = (pieceType: "rook" | "knight" | "bishop" | "queen")=>{
         if (isGameOver) return;
-        onPromotion(pieceType,isPromoted,setPromoted,boardState,setBoardstate,Turn,setUnderAttack,setGameStatus);
+        const resolution = onPromotion({
+            type: pieceType,
+            isPromoted,
+            boardState,
+            turn: Turn,
+        });
+
+        if (!resolution) return;
+
+        setBoardstate(resolution.boardState);
+        setPromoted(resolution.promotion);
+        setUnderAttack(resolution.underAttack);
+        setGameStatus(resolution.gameStatus);
+
+        if (resolution.winnerMessage) {
+            console.log(resolution.winnerMessage);
+        }
     }
 
     const handleSquareClick = () => {
