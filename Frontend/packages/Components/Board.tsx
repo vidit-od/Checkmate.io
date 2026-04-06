@@ -4,7 +4,8 @@ import {handleOnClick} from "../Helpers/Onclick"
 import {initialBoardState} from "../Helpers/InitialBoard"
 import {handlePromotion} from "../Helpers/HandlePromotion"
 import { useRecoilState } from "recoil";
-import { boardStateAtom, FocusPieceAtom, gameStatusAtom, isPromotedAtom, MoveListAtom, turnAtom, underAttackAtom, validMovesAtom } from "../atoms/atom";
+import { boardStateAtom, castlingRightsAtom, enPassantTargetAtom, FocusPieceAtom, gameStatusAtom, isPromotedAtom, MoveListAtom, turnAtom, underAttackAtom, validMovesAtom } from "../atoms/atom";
+import { initialCastlingRights } from "../Helpers/MoveEngine";
 
 function Board() {
     const [boardState, setBoardstate] = useRecoilState(boardStateAtom);
@@ -15,6 +16,8 @@ function Board() {
     const [isPromoted, setPromoted] = useRecoilState<{x:number, y:number} | null>(isPromotedAtom);
     const [MoveList, setMoveList] = useRecoilState(MoveListAtom);
     const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom);
+    const [castlingRights, setCastlingRights] = useRecoilState(castlingRightsAtom);
+    const [enPassantTarget, setEnPassantTarget] = useRecoilState(enPassantTargetAtom);
     const renderSquares = () => {
         const square: JSX.Element[][] = []
         for (let i = 0; i < 8; i++) {
@@ -48,6 +51,8 @@ function Board() {
                                 isPromoted,
                                 moveList: MoveList,
                                 gameStatus,
+                                castlingRights,
+                                enPassantTarget,
                             });
 
                             setBoardstate(resolution.boardState);
@@ -58,6 +63,8 @@ function Board() {
                             setUnderAttack(resolution.underAttack);
                             setMoveList(resolution.moveList);
                             setGameStatus(resolution.gameStatus);
+                            setCastlingRights(resolution.castlingRights);
+                            setEnPassantTarget(resolution.enPassantTarget);
 
                             if (resolution.winnerMessage) {
                                 console.log(resolution.winnerMessage);
@@ -83,6 +90,8 @@ function Board() {
     useEffect(() => {
         setBoardstate(initialBoardState);
         setGameStatus("playing");
+        setCastlingRights(initialCastlingRights);
+        setEnPassantTarget(null);
     }, [])
     
     return (

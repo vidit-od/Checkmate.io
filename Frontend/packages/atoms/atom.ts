@@ -1,6 +1,7 @@
 import {atom} from 'recoil'
 import {initialBoardState} from "../Helpers/InitialBoard"
-import { piece } from '../../types/chess';
+import { CastlingRights, piece, Position } from '../../types/chess';
+import { initialCastlingRights } from '../Helpers/MoveEngine';
 export const boardStateAtom = atom({
     key: "boardStateAtom",
     default: initialBoardState,
@@ -39,4 +40,14 @@ export const MoveListAtom = atom<{ w: string; b: string | null}[]>({
 export const gameStatusAtom = atom<"playing" | "check" | "checkmate" | "stalemate">({
     key: "gameStatusAtom",
     default: "playing",
+});
+
+export const castlingRightsAtom = atom<CastlingRights>({
+    key: "castlingRightsAtom",
+    default: initialCastlingRights,
+});
+
+export const enPassantTargetAtom = atom<Position | null>({
+    key: "enPassantTargetAtom",
+    default: null,
 });

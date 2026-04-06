@@ -12,6 +12,16 @@ export interface FocusedPiece extends Position {
     piece: piece;
 }
 
+export interface CastlingRightsByColor {
+    kingSide: boolean;
+    queenSide: boolean;
+}
+
+export interface CastlingRights {
+    white: CastlingRightsByColor;
+    black: CastlingRightsByColor;
+}
+
 export interface SquareProps {
     xPos: number; // X position of the square
     yPos: number; // Y position of the square
@@ -40,6 +50,8 @@ export interface PromotionHandlerArgs {
     isPromoted: Position | null;
     boardState: BoardType;
     turn: "black" | "white";
+    castlingRights: CastlingRights;
+    enPassantTarget: Position | null;
 }
 
 export interface ClickHandlerArgs {
@@ -53,6 +65,8 @@ export interface ClickHandlerArgs {
     isPromoted: Position | null;
     moveList: {w:string, b:string|null}[];
     gameStatus: GameStatus;
+    castlingRights: CastlingRights;
+    enPassantTarget: Position | null;
 }
 
 export interface ClickResolution {
@@ -64,6 +78,8 @@ export interface ClickResolution {
     underAttack: Position | null;
     moveList: {w:string, b:string|null}[];
     gameStatus: GameStatus;
+    castlingRights: CastlingRights;
+    enPassantTarget: Position | null;
     winnerMessage: string | null;
 }
 
@@ -72,6 +88,8 @@ export interface PromotionResolution {
     promotion: Position | null;
     underAttack: Position | null;
     gameStatus: GameStatus;
+    castlingRights: CastlingRights;
+    enPassantTarget: Position | null;
     winnerMessage: string | null;
 }
 

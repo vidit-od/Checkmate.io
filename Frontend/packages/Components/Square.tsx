@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { SquareProps } from "../../types/chess";
 import Promotion from "./Promotion";
 import { useRecoilState } from "recoil";
-import { boardStateAtom, gameStatusAtom, isPromotedAtom, turnAtom, underAttackAtom } from "../atoms/atom";
+import { boardStateAtom, castlingRightsAtom, enPassantTargetAtom, gameStatusAtom, isPromotedAtom, turnAtom, underAttackAtom } from "../atoms/atom";
 const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attacked,promotion,onPromotion}) =>{
     const [size,setSize] = useState<number>(0)
 
@@ -11,6 +11,8 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attac
     const [Turn] = useRecoilState(turnAtom);
     const [isPromoted, setPromoted] = useRecoilState<{x:number, y:number} | null>(isPromotedAtom);
     const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom);
+    const [castlingRights, setCastlingRights] = useRecoilState(castlingRightsAtom);
+    const [enPassantTarget, setEnPassantTarget] = useRecoilState(enPassantTargetAtom);
 
     useEffect(()=>{
         const TotalWidth = window.innerWidth;
@@ -29,6 +31,8 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attac
             isPromoted,
             boardState,
             turn: Turn,
+            castlingRights,
+            enPassantTarget,
         });
 
         if (!resolution) return;
@@ -37,6 +41,8 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attac
         setPromoted(resolution.promotion);
         setUnderAttack(resolution.underAttack);
         setGameStatus(resolution.gameStatus);
+        setCastlingRights(resolution.castlingRights);
+        setEnPassantTarget(resolution.enPassantTarget);
 
         if (resolution.winnerMessage) {
             console.log(resolution.winnerMessage);

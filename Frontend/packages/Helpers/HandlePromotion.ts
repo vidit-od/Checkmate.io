@@ -6,6 +6,8 @@ export const handlePromotion = ({
     isPromoted,
     boardState,
     turn,
+    castlingRights,
+    enPassantTarget,
 }: PromotionHandlerArgs): PromotionResolution | null =>{
     if(isPromoted == null) return null;
     const newBoard: BoardType = {
@@ -16,12 +18,14 @@ export const handlePromotion = ({
     if(newpiece == null) return null;
     newpiece.type = type;
     newBoard.piece[isPromoted.x][isPromoted.y] = newpiece;
-    const evaluation = getGameStatus(newBoard, turn);
+    const evaluation = getGameStatus(newBoard, turn, castlingRights, enPassantTarget);
     return {
         boardState: newBoard,
         promotion: null,
         underAttack: evaluation.underAttack,
         gameStatus: evaluation.status,
+        castlingRights,
+        enPassantTarget,
         winnerMessage: evaluation.status === "checkmate" ? `${turn === "white" ? "black" : "white"} won` : evaluation.status === "stalemate" ? "Draw" : null,
     };
 }

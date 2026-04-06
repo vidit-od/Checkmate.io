@@ -1,11 +1,21 @@
-import {piece, BoardType } from "../../types/chess";
+import {piece, BoardType, CastlingRights, Position } from "../../types/chess";
 import {isKingInCheck} from "./CheckKing"
+import { applyMoveToBoard } from "./MoveEngine";
+import { isSquareAttacked } from "./CheckKing";
 
 export const isValidMove = (x: number, y: number): boolean => {
     return x >= 0 && x < 8 && y >= 0 && y < 8;
 };
 
-export const calculateValidMoves = (x: number, y: number, piece: piece, board: BoardType, flag: boolean): [number, number][] => {
+export const calculateValidMoves = (
+    x: number,
+    y: number,
+    piece: piece,
+    board: BoardType,
+    flag: boolean,
+    castlingRights?: CastlingRights,
+    enPassantTarget?: Position | null
+): [number, number][] => {
     const moves: [number, number][] = [];
     const directions: [number, number][] = [];
 
@@ -29,6 +39,9 @@ export const calculateValidMoves = (x: number, y: number, piece: piece, board: B
             }
             if (isValidMove(x + forward, y + 1) && board.piece[x + forward][y + 1] != null && board.piece[x + forward][y + 1]?.color !== piece.color) {
                 moves.push([x + forward, y + 1]);
+            }
+            if (enPassantTarget && enPassantTarget.x === x + forward && Math.abs(enPassantTarget.y - y) === 1) {
+                moves.push([enPassantTarget.x, enPassantTarget.y]);
             }
             break;
         }
@@ -67,6 +80,36 @@ export const calculateValidMoves = (x: number, y: number, piece: piece, board: B
                     moves.push([x + dx, y + dy]);
                 }
             });
+
+            if (castlingRights && !isKingInCheck(piece.color, board)) {
+                const rights = castlingRights[piece.color];
+                const opponentColor = piece.color === "white" ? "black" : "white";
+
+                if (
+                    rights.kingSide &&
+                    board.piece[x][7]?.type === "rook" &&
+                    board.piece[x][7]?.color === piece.color &&
+                    board.piece[x][5] == null &&
+                    board.piece[x][6] == null &&
+                    !isSquareAttacked({ x, y: 5 }, opponentColor, board) &&
+                    !isSquareAttacked({ x, y: 6 }, opponentColor, board)
+                ) {
+                    moves.push([x, 6]);
+                }
+
+                if (
+                    rights.queenSide &&
+                    board.piece[x][0]?.type === "rook" &&
+                    board.piece[x][0]?.color === piece.color &&
+                    board.piece[x][1] == null &&
+                    board.piece[x][2] == null &&
+                    board.piece[x][3] == null &&
+                    !isSquareAttacked({ x, y: 3 }, opponentColor, board) &&
+                    !isSquareAttacked({ x, y: 2 }, opponentColor, board)
+                ) {
+                    moves.push([x, 2]);
+                }
+            }
             break;
         }
     }
@@ -93,13 +136,13 @@ export const calculateValidMoves = (x: number, y: number, piece: piece, board: B
         
         // make deep copy; try the move; if causes no check voilation then add to new list;
         moves.map(i => {
-            const TempBoard = {
-                ...board,
-                piece: [...board.piece.map(row => [...row])]
-            };
-
-            TempBoard.piece[x][y] = null;
-            TempBoard.piece[i[0]][i[1]] = piece;
+            const { board: TempBoard } = applyMoveToBoard(
+                board,
+                { x, y },
+                { x: i[0], y: i[1] },
+                piece,
+                enPassantTarget ?? null
+            );
             if (!isKingInCheck(piece.color, TempBoard)) {
                 newmoves.push(i);
             }
