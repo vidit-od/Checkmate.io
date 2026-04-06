@@ -49,5 +49,5 @@ export const getGameStatus = (board : BoardType, defendingColor : "white"| "blac
         return inCheck ? "checkmate" : "stalemate";
     }
 
-    return inCheck ? "check" : "safe";
+    return inCheck ? "check" : "playing";
 }

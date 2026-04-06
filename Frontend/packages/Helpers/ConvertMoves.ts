@@ -27,7 +27,7 @@ export const ConvertMoves = (piece:piece, x:number, y:number, Turn: "black"|"whi
     Move += intToChar(y)
     Move += 8-x;
 
-    let m: {
+    const m: {
         w: string;
         b: string | null;
       }[] = MoveList;

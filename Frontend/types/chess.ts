@@ -8,9 +8,9 @@ export interface SquareProps {
     yPos: number; // Y position of the square
     piece: piece|null;
     onClick?: () => void; // Optional click handler
-    hint?: Boolean;
-    focus?: Boolean;
-    attacked?: Boolean;
+    hint?: boolean;
+    focus?: boolean;
+    attacked?: boolean;
     promotion: {x:number , y:number} | null;onPromotion: (
         type: "rook" | "knight" | "bishop" | "queen",
         isPromoted: { x: number; y: number } | null,
@@ -18,7 +18,8 @@ export interface SquareProps {
         boardState: BoardType,
         setBoardState: (newState: BoardType) => void,
         Turn: "black" | "white",
-        setUnderAttack: (attack: { x: number; y: number } | null) => void
+        setUnderAttack: (attack: { x: number; y: number } | null) => void,
+        setGameStatus: (status: GameStatus) => void
     ) => void;
     
   }
@@ -30,3 +31,5 @@ export interface BoardType{
 export interface MoveList{
     list : {w:string, b: string|null}[]
 }
+
+export type GameStatus = "playing" | "check" | "checkmate" | "stalemate";

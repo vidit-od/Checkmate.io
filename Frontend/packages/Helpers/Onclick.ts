@@ -1,4 +1,4 @@
-import { piece, BoardType} from "../../types/chess";
+import { piece, BoardType, GameStatus} from "../../types/chess";
 import {calculateValidMoves} from "./ValidMoves"
 import {getGameStatus} from "./Checkmate"
 import {ConvertMoves} from "./ConvertMoves"
@@ -18,9 +18,16 @@ export const handleOnClick = (i: number,
     setPromoted: (promo: { x: number; y: number } | null) => void,
     setUnderAttack: (attack: { x: number; y: number } | null) => void,
     MoveList: {w:string, b:string|null}[],
-    setMoveList : (movelist: {w:string , b: string|null}[]) => void) => {
-       
-    
+    setMoveList : (movelist: {w:string , b: string|null}[]) => void,
+    gameStatus: GameStatus,
+    setGameStatus: (status: GameStatus) => void) => {
+
+    // if Game is over we do nothing;
+    if (gameStatus === "checkmate" || gameStatus === "stalemate") {
+        setFocusPiece(null);
+        setValidMoves(null);
+        return;
+    }
     // do not allow out of turn moves;
     if ((FocusPiece == null && piece?.color != Turn) || isPromoted != null) {
         setFocusPiece(null);
@@ -44,7 +51,7 @@ export const handleOnClick = (i: number,
         // click empty square -> make move
         else if (FocusPiece != null) {
             let isCurrValid = false;
-            validMoves?.map((coord, _index) => {
+            validMoves?.map((coord) => {
                 if (i == coord[0] && j == coord[1]) {
                     isCurrValid = true;
                 }
@@ -67,6 +74,7 @@ export const handleOnClick = (i: number,
                 setBoardstate(newBoard);
                 setTurn(opponentColor);
                 const gameStatus = getGameStatus(newBoard, opponentColor, setUnderAttack);
+                setGameStatus(gameStatus);
                 if (gameStatus === "checkmate") {
                     console.log(Turn, 'won');
                 } else if (gameStatus === "stalemate") {

@@ -2,14 +2,15 @@ import { useEffect, useState } from "react"
 import { SquareProps } from "../../types/chess";
 import Promotion from "./Promotion";
 import { useRecoilState } from "recoil";
-import { boardStateAtom, isPromotedAtom, turnAtom, underAttackAtom } from "../atoms/atom";
+import { boardStateAtom, gameStatusAtom, isPromotedAtom, turnAtom, underAttackAtom } from "../atoms/atom";
 const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attacked,promotion,onPromotion}) =>{
     const [size,setSize] = useState<number>(0)
 
     const [boardState, setBoardstate] = useRecoilState(boardStateAtom);
-    const [_UnderAttack, setUnderAttack] = useRecoilState<{ x: number, y: number } | null>(underAttackAtom);
-    const [Turn, _setTurn] = useRecoilState(turnAtom);
+    const [, setUnderAttack] = useRecoilState<{ x: number, y: number } | null>(underAttackAtom);
+    const [Turn] = useRecoilState(turnAtom);
     const [isPromoted, setPromoted] = useRecoilState<{x:number, y:number} | null>(isPromotedAtom);
+    const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom);
 
     useEffect(()=>{
         const TotalWidth = window.innerWidth;
@@ -19,9 +20,16 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attac
 
     },[])
 
+    const isGameOver = gameStatus === "checkmate" || gameStatus === "stalemate";
+
     const handlePieceSelect = (pieceType: "rook" | "knight" | "bishop" | "queen")=>{
-        console.log(pieceType);
-        onPromotion(pieceType,isPromoted,setPromoted,boardState,setBoardstate,Turn,setUnderAttack);
+        if (isGameOver) return;
+        onPromotion(pieceType,isPromoted,setPromoted,boardState,setBoardstate,Turn,setUnderAttack,setGameStatus);
+    }
+
+    const handleSquareClick = () => {
+        if (isGameOver) return;
+        onClick?.();
     }
 
     let colorCode = "";
@@ -33,7 +41,7 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attac
         <div className="bg-transparent relative text-xxl" style={{
             width:size,
             height:size,
-        }} onClick={onClick}>
+        }} onClick={handleSquareClick}>
             {yPos == 0 && <div className="text-sm absolute top-0 left-1" style={{
                 color: (Math.abs(8 - 1 - xPos) % 2 == 0)?"white":"green"
             }}>{Math.abs(8 - 1 - xPos) + 1}</div>}

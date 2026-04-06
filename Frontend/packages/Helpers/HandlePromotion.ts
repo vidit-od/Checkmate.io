@@ -1,4 +1,4 @@
-import { BoardType } from "../../types/chess";
+import { BoardType, GameStatus } from "../../types/chess";
 import {getGameStatus} from "./Checkmate"
 
 export const handlePromotion = (
@@ -8,7 +8,8 @@ export const handlePromotion = (
     boardState: BoardType,
     setBoardstate: (newState: BoardType) => void,
     Turn: "black" | "white",
-    setUnderAttack: (attack: { x: number; y: number } | null) => void
+    setUnderAttack: (attack: { x: number; y: number } | null) => void,
+    setGameStatus: (status: GameStatus) => void
 )=>{
     if(isPromoted == null) return;
     const newBoard: BoardType = {
@@ -22,6 +23,7 @@ export const handlePromotion = (
     setBoardstate(newBoard)
     setPromoted(null)
     const gameStatus = getGameStatus(newBoard, Turn, setUnderAttack);
+    setGameStatus(gameStatus);
     if (gameStatus === "checkmate") {
         console.log(Turn === "white" ? "black" : "white", "won");
     } else if (gameStatus === "stalemate") {

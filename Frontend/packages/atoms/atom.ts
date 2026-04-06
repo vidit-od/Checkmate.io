@@ -35,3 +35,8 @@ export const MoveListAtom = atom<{ w: string; b: string | null}[]>({
     key : "MovesAtom",
     default:[],
 })
+
+export const gameStatusAtom = atom<"playing" | "check" | "checkmate" | "stalemate">({
+    key: "gameStatusAtom",
+    default: "playing",
+});
