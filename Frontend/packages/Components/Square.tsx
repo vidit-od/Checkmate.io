@@ -1,11 +1,27 @@
-import { useEffect, useState } from "react"
 import { SquareProps } from "../../types/chess";
 import Promotion from "./Promotion";
 import { useRecoilState } from "recoil";
-import { boardStateAtom, castlingRightsAtom, enPassantTargetAtom, gameStatusAtom, isPromotedAtom, turnAtom, underAttackAtom } from "../atoms/atom";
-const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attacked,promotion,onPromotion}) =>{
-    const [size,setSize] = useState<number>(0)
-
+import { boardStateAtom, castlingRightsAtom, enPassantTargetAtom, gameStatusAtom, isPromotedAtom, SquareSize, turnAtom, underAttackAtom } from "../atoms/atom";
+const Square: React.FC<SquareProps> = ({
+    xPos,
+    yPos,
+    onClick,
+    onPieceDragStart,
+    onDragOver,
+    onDragEnter,
+    onDrop,
+    onDragEnd,
+    draggablePiece,
+    isDraggingPiece,
+    isDragTarget,
+    piece,
+    hint,
+    focus,
+    attacked,
+    promotion,
+    onPromotion
+}) =>{
+    const [size] = useRecoilState(SquareSize);
     const [boardState, setBoardstate] = useRecoilState(boardStateAtom);
     const [, setUnderAttack] = useRecoilState<{ x: number, y: number } | null>(underAttackAtom);
     const [Turn] = useRecoilState(turnAtom);
@@ -13,14 +29,6 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attac
     const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom);
     const [castlingRights, setCastlingRights] = useRecoilState(castlingRightsAtom);
     const [enPassantTarget, setEnPassantTarget] = useRecoilState(enPassantTargetAtom);
-
-    useEffect(()=>{
-        const TotalWidth = window.innerWidth;
-        const TotalHeight = window.innerHeight - 70;
-        const SquareSize = Math.min(TotalHeight,TotalWidth)/8;
-        setSize(SquareSize);
-
-    },[])
 
     const isGameOver = gameStatus === "checkmate" || gameStatus === "stalemate";
 
@@ -63,7 +71,7 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attac
         <div className="bg-transparent relative text-xxl" style={{
             width:size,
             height:size,
-        }} onClick={handleSquareClick}>
+        }} onClick={handleSquareClick} onDragOver={onDragOver} onDragEnter={onDragEnter} onDrop={onDrop}>
             {yPos == 0 && <div className="text-sm absolute top-0 left-1" style={{
                 color: (Math.abs(8 - 1 - xPos) % 2 == 0)?"white":"green"
             }}>{Math.abs(8 - 1 - xPos) + 1}</div>}
@@ -74,7 +82,9 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attac
                 {String.fromCharCode('a'.charCodeAt(0) + yPos)}
             </div>}
 
-            {colorCode != "" && <div className="absolute w-full h-full left-0 top-0 bg-cover" style={{
+            {colorCode != "" && <div
+                className={`absolute w-full h-full left-0 top-0 bg-cover ${draggablePiece ? "cursor-grab active:cursor-grabbing" : ""} ${isDraggingPiece ? "opacity-40 scale-95" : ""} transition-all duration-150`}
+                style={{
                 backgroundImage : `url('/assets/${colorCode}.png')`,
                 backgroundColor:(focus)
                 ?'rgba(255, 255, 51, 0.5)':
@@ -82,10 +92,15 @@ const Square: React.FC<SquareProps> = ({xPos,yPos,onClick,piece,hint,focus,attac
                 ?'rgba(255, 0, 0, 0.5)'
                 :'transparent',
                 zIndex:1
-            }}></div>}
+            }}
+                onDragStart={onPieceDragStart}
+                onDragEnd={onDragEnd}
+                draggable={draggablePiece}
+            ></div>}
 
-            {hint && colorCode != "" && <div className=" absolute h-full w-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-8 z-0 border-slate-700 opacity-30"></div> }
+            {hint && colorCode != "" && <div className=" absolute h-full w-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-8 z-10 border-slate-700 opacity-30"></div> }
             {hint && colorCode == "" && <div className=" absolute h-1/3 w-1/3 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-700 opacity-30 rounded-full"> </div>}
+            {isDragTarget && <div className="absolute inset-0 border-[0.4em] border-gray-200/85 shadow-[0_0_18px_rgba(252,211,77,0.35)] pointer-events-none z-1"></div>}
 
             {promotion != null && xPos == promotion.x && yPos == promotion.y && piece && <Promotion color = {piece.color} onPieceSelect={handlePieceSelect}/>}
         </div>

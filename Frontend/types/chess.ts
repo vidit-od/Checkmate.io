@@ -27,6 +27,14 @@ export interface SquareProps {
     yPos: number; // Y position of the square
     piece: piece|null;
     onClick?: () => void; // Optional click handler
+    onPieceDragStart?: (event: React.DragEvent<HTMLDivElement>) => void;
+    onDragOver?: (event: React.DragEvent<HTMLDivElement>) => void;
+    onDragEnter?: (event: React.DragEvent<HTMLDivElement>) => void;
+    onDrop?: (event: React.DragEvent<HTMLDivElement>) => void;
+    onDragEnd?: () => void;
+    draggablePiece?: boolean;
+    isDraggingPiece?: boolean;
+    isDragTarget?: boolean;
     hint?: boolean;
     focus?: boolean;
     attacked?: boolean;

@@ -2,6 +2,17 @@ import {atom} from 'recoil'
 import {initialBoardState} from "../Helpers/InitialBoard"
 import { CastlingRights, piece, Position } from '../../types/chess';
 import { initialCastlingRights } from '../Helpers/MoveEngine';
+
+export const getMaxSquareSize = () => {
+    if (typeof window === "undefined") {
+        return 64;
+    }
+
+    const totalWidth = window.innerWidth - 100;
+    const totalHeight = window.innerHeight - 70;
+    return Math.min(totalHeight, totalWidth) / 8;
+};
+
 export const boardStateAtom = atom({
     key: "boardStateAtom",
     default: initialBoardState,
@@ -26,7 +37,7 @@ export const underAttackAtom = atom<{ x: number; y: number } | null>({
     key: "underAttackAtom",
     default: null,
   });
-  
+
 export const isPromotedAtom = atom<{ x: number; y: number } | null>({
     key: "isPromotedAtom",
     default: null,
@@ -51,3 +62,8 @@ export const enPassantTargetAtom = atom<Position | null>({
     key: "enPassantTargetAtom",
     default: null,
 });
+
+export const SquareSize = atom<number>({
+    key : "squareSize",
+    default: getMaxSquareSize(),
+})
