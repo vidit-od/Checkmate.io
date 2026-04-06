@@ -1,7 +1,6 @@
 import { piece, BoardType} from "../../types/chess";
 import {calculateValidMoves} from "./ValidMoves"
-import {isKingInCheck} from "./CheckKing"
-import {isCheckmate} from "./Checkmate"
+import {getGameStatus} from "./Checkmate"
 import {ConvertMoves} from "./ConvertMoves"
 
 export const handleOnClick = (i: number,
@@ -67,18 +66,11 @@ export const handleOnClick = (i: number,
                 }
                 setBoardstate(newBoard);
                 setTurn(opponentColor);
-
-                if (!isKingInCheck(opponentColor, newBoard, false, setUnderAttack)) {
-                    setUnderAttack(null);
-                    // isCheckmate can be used to find stalemate as well; 
-                    // if under check then checkmate ;
-                    // if no check then check for stalemate;
-                    if(isCheckmate(newBoard, opponentColor, setUnderAttack)){
-                        console.log("Draw");
-                    }
-                }
-                else if(isCheckmate(newBoard, opponentColor, setUnderAttack)){
+                const gameStatus = getGameStatus(newBoard, opponentColor, setUnderAttack);
+                if (gameStatus === "checkmate") {
                     console.log(Turn, 'won');
+                } else if (gameStatus === "stalemate") {
+                    console.log("Draw");
                 }
             }
             setFocusPiece(null);

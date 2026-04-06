@@ -1,5 +1,5 @@
 import { BoardType } from "../../types/chess";
-import {isKingInCheck} from "./CheckKing"
+import {getGameStatus} from "./Checkmate"
 
 export const handlePromotion = (
     type:"rook" | "knight" | "bishop" | "queen",
@@ -21,7 +21,10 @@ export const handlePromotion = (
     newBoard.piece[isPromoted.x][isPromoted.y] = newpiece;
     setBoardstate(newBoard)
     setPromoted(null)
-    if (!isKingInCheck(Turn, newBoard, false, setUnderAttack)) {
-        setUnderAttack(null);
+    const gameStatus = getGameStatus(newBoard, Turn, setUnderAttack);
+    if (gameStatus === "checkmate") {
+        console.log(Turn === "white" ? "black" : "white", "won");
+    } else if (gameStatus === "stalemate") {
+        console.log("Draw");
     }
 }
