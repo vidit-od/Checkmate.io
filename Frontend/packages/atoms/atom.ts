@@ -8,11 +8,10 @@ export const getMaxSquareSize = () => {
         return 64;
     }
 
-    const totalHeight = window.outerHeight;
-    const totalWidth = window.outerWidth;
-    const SquareSize = Math.min(totalHeight -130, totalWidth-100) / 8
-    console.log(SquareSize , (totalHeight < totalWidth) ? "Height"  : "width", "Height", totalHeight , "width", totalWidth);
-    return SquareSize;
+    const totalHeight = window.innerHeight;
+    const totalWidth = window.innerWidth;
+    const squareSize = Math.max(Math.min(totalHeight - 130, totalWidth - 100) / 8, 0);
+    return squareSize;
 };
 
 export const boardStateAtom = atom({

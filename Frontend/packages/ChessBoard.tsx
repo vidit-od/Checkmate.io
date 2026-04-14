@@ -1,17 +1,61 @@
+import { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
 import Board from "./Components/Board"
 import NameCard from "./Components/NameCard"
 import Moves from "./Moves";
+import { SquareSize } from "./atoms/atom";
+
 function ChessBoard(){
+    const squareSize = useRecoilValue(SquareSize);
+    const [viewportWidth, setViewportWidth] = useState(() =>
+        typeof window === "undefined" ? 0 : window.innerWidth
+    );
+
+    useEffect(() => {
+        const updateViewportWidth = () => setViewportWidth(window.innerWidth);
+
+        updateViewportWidth();
+        window.addEventListener("resize", updateViewportWidth);
+
+        return () => {
+            window.removeEventListener("resize", updateViewportWidth);
+        };
+    }, []);
+
+    const isDesktopLayout = viewportWidth >= 1024;
+    const keepFixedDesktopWidths = viewportWidth > 1024;
+    const boardWidth = Math.round(squareSize * 8);
+
     return (
-        <div className="flex bg-gray-600">
-       <div className="flex-col h-screen px-5 bg-gray-600">
-        <NameCard/>
-        <Board/>
-        <NameCard/>
-       </div>
-       <div className="w-full relative my-8 mx-3">
-         <Moves/>
-       </div>
+        <div
+          className={`flex justify-center overflow-x-hidden bg-gray-600 py-4 ${
+            isDesktopLayout ? "flex-nowrap items-start" : "flex-wrap"
+          }`}
+        >
+          <div className="flex-col px-2 lg:px-5">
+           <NameCard/>
+           <Board/>
+           <NameCard/>
+          </div>
+          <div
+            className={`${
+              isDesktopLayout
+                ? keepFixedDesktopWidths
+                  ? "my-0 w-[300px] shrink-0 xl:w-[380px]"
+                  : "my-0 min-w-[300px] flex-1"
+                : "my-6"
+            }`}
+            style={
+              isDesktopLayout
+                ? undefined
+                : {
+                    width: boardWidth ? `${boardWidth}px` : "100%",
+                    maxWidth: "100%",
+                  }
+            }
+          >
+            <Moves sideBySide={isDesktopLayout}/>
+          </div>
        </div>
     )
 }
