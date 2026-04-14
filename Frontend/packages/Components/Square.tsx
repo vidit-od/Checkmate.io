@@ -67,16 +67,23 @@ const Square: React.FC<SquareProps> = ({
         colorCode = piece.color;
         colorCode = colorCode + piece.type
     }
+
+    const notationFontSize = Math.max(size * 0.16, 8);
+
     return (
         <div className="bg-transparent relative text-xxl" style={{
             width:size,
             height:size,
         }} onClick={handleSquareClick} onDragOver={onDragOver} onDragEnter={onDragEnter} onDrop={onDrop}>
-            {yPos == 0 && <div className="text-sm absolute top-0 left-1" style={{
+            {yPos == 0 && <div className="absolute top-0 left-1" style={{
+                fontSize: notationFontSize,
+                lineHeight: 1,
                 color: (Math.abs(8 - 1 - xPos) % 2 == 0)?"white":"green"
             }}>{Math.abs(8 - 1 - xPos) + 1}</div>}
 
-            {xPos == 7 && <div className="text-sm absolute bottom-1 right-1" style={{
+            {xPos == 7 && <div className="absolute bottom-1 right-1" style={{
+                fontSize: notationFontSize,
+                lineHeight: 1,
                 color: ( yPos % 2 == 0)? "white" : "green"
             }}>
                 {String.fromCharCode('a'.charCodeAt(0) + yPos)}
