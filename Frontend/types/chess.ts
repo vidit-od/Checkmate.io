@@ -51,7 +51,7 @@ export interface MoveList{
     list : {w:string, b: string|null}[]
 }
 
-export type GameStatus = "playing" | "check" | "checkmate" | "stalemate";
+export type GameStatus = "playing" | "check" | "checkmate" | "stalemate" | "Resigned";
 
 export interface PromotionHandlerArgs {
     type: "rook" | "knight" | "bishop" | "queen";

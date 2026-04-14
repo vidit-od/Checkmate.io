@@ -30,7 +30,7 @@ const Square: React.FC<SquareProps> = ({
     const [castlingRights, setCastlingRights] = useRecoilState(castlingRightsAtom);
     const [enPassantTarget, setEnPassantTarget] = useRecoilState(enPassantTargetAtom);
 
-    const isGameOver = gameStatus === "checkmate" || gameStatus === "stalemate";
+    const isGameOver = gameStatus === "checkmate" || gameStatus === "stalemate" || gameStatus === "Resigned";
 
     const handlePieceSelect = (pieceType: "rook" | "knight" | "bishop" | "queen")=>{
         if (isGameOver) return;

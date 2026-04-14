@@ -33,7 +33,7 @@ export const handleOnClick = ({
     });
 
     // if Game is over we do nothing;
-    if (gameStatus === "checkmate" || gameStatus === "stalemate") {
+    if (gameStatus === "checkmate" || gameStatus === "stalemate" || gameStatus === "Resigned") {
         return {
             ...resetSelection(),
             underAttack: null,

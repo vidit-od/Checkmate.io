@@ -46,7 +46,7 @@ function Board() {
         y: number,
         piece: piece | null
     ) => {
-        if (!piece || piece.color !== Turn || gameStatus === "checkmate" || gameStatus === "stalemate" || isPromoted != null) {
+        if (!piece || piece.color !== Turn || gameStatus === "checkmate" || gameStatus === "stalemate" || gameStatus === "Resigned" || isPromoted != null) {
             event.preventDefault();
             return;
         }
@@ -150,7 +150,7 @@ function Board() {
                         key={i * 8 + j}
                         xPos={i}
                         yPos={j}
-                        draggablePiece={Boolean(piece && piece.color === Turn && gameStatus !== "checkmate" && gameStatus !== "stalemate" && isPromoted == null)}
+                        draggablePiece={Boolean(piece && piece.color === Turn && gameStatus !== "checkmate" && gameStatus !== "stalemate" && gameStatus !== "Resigned" && isPromoted == null)}
                         isDraggingPiece={Boolean(draggedPiece && draggedPiece.x === i && draggedPiece.y === j)}
                         isDragTarget={Boolean(
                             draggedPiece &&
