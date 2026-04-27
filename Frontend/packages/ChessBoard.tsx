@@ -37,9 +37,9 @@ function ChessBoard(){
         >
           { (gameStatus !== "playing") && <Status/>}
           <div className="flex-col px-2 lg:px-5">
-           <NameCard/>
+           <NameCard color = "black"/>
            <Board/>
-           <NameCard/>
+           <NameCard color = "white"/>
           </div>
           <div
             className={`${
