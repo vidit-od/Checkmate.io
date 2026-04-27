@@ -28,7 +28,7 @@ function ChessBoard(){
 
     return (
         <div
-          className={`flex justify-center overflow-x-hidden bg-gray-600 py-4 ${
+          className={`flex justify-center overflow-x-hidden bg-gray-600 px-4 ${
             isDesktopLayout ? "flex-nowrap items-start" : "flex-wrap"
           }`}
         >
@@ -41,8 +41,8 @@ function ChessBoard(){
             className={`${
               isDesktopLayout
                 ? keepFixedDesktopWidths
-                  ? "my-0 w-[300px] shrink-0 xl:w-[380px]"
-                  : "my-0 min-w-[300px] flex-1"
+                  ? "my-auto w-[300px] shrink-0 xl:w-[380px]"
+                  : "my-auto min-w-[300px] flex-1"
                 : "my-6"
             }`}
             style={

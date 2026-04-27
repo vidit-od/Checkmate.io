@@ -10,7 +10,7 @@ export const getMaxSquareSize = () => {
 
     const totalHeight = window.innerHeight;
     const totalWidth = window.innerWidth;
-    const squareSize = Math.max(Math.min(totalHeight - 130, totalWidth - 100) / 8, 0);
+    const squareSize = Math.max(Math.min(totalHeight - 80, totalWidth - 100) / 8, 0);
     return squareSize;
 };
 
