@@ -3,13 +3,16 @@ import { useRecoilValue } from "recoil";
 import Board from "./Components/Board"
 import NameCard from "./Components/NameCard"
 import Moves from "./Moves";
+import Status from "./Components/Status"
 import { SquareSize } from "./atoms/atom";
+import { gameStatusAtom } from "./atoms/atom";
 
 function ChessBoard(){
     const squareSize = useRecoilValue(SquareSize);
     const [viewportWidth, setViewportWidth] = useState(() =>
         typeof window === "undefined" ? 0 : window.innerWidth
     );
+    const gameStatus = useRecoilValue(gameStatusAtom);
 
     useEffect(() => {
         const updateViewportWidth = () => setViewportWidth(window.innerWidth);
@@ -28,10 +31,11 @@ function ChessBoard(){
 
     return (
         <div
-          className={`flex justify-center overflow-x-hidden bg-gray-600 px-4 ${
+          className={` relative flex justify-center overflow-x-hidden bg-gray-600 px-4 ${
             isDesktopLayout ? "flex-nowrap items-start" : "flex-wrap"
           }`}
         >
+          { (gameStatus !== "playing") && <Status/>}
           <div className="flex-col px-2 lg:px-5">
            <NameCard/>
            <Board/>
