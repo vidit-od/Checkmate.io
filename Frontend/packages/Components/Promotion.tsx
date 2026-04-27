@@ -2,7 +2,7 @@ import React, {  } from "react";
 
 interface PromotionProps{
     color: "white" | "black";
-    onPieceSelect: (piece: "rook" | "knight" | "bishop" | "queen") => void;
+    onPieceSelect: (piece: "rook" | "knight" | "bishop" | "queen") => void | Promise<void>;
 }
 const Promotion: React.FC<PromotionProps> = ({color, onPieceSelect})=>{
     const handleOptionClick = (

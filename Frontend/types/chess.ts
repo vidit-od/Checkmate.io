@@ -39,7 +39,8 @@ export interface SquareProps {
     focus?: boolean;
     attacked?: boolean;
     promotion: Position | null;
-    onPromotion: (args: PromotionHandlerArgs) => PromotionResolution | null;
+    promotionColor?: "white" | "black" | null;
+    onPromotion: (piece: "rook" | "knight" | "bishop" | "queen") => void | Promise<void>;
 
   }
 
@@ -52,15 +53,6 @@ export interface MoveList{
 }
 
 export type GameStatus = "playing" | "check" | "checkmate" | "stalemate" | "Resigned";
-
-export interface PromotionHandlerArgs {
-    type: "rook" | "knight" | "bishop" | "queen";
-    isPromoted: Position | null;
-    boardState: BoardType;
-    turn: "black" | "white";
-    castlingRights: CastlingRights;
-    enPassantTarget: Position | null;
-}
 
 export interface ClickHandlerArgs {
     x: number;
@@ -91,17 +83,49 @@ export interface ClickResolution {
     winnerMessage: string | null;
 }
 
-export interface PromotionResolution {
-    boardState: BoardType;
-    promotion: Position | null;
-    underAttack: Position | null;
-    gameStatus: GameStatus;
-    castlingRights: CastlingRights;
-    enPassantTarget: Position | null;
-    winnerMessage: string | null;
-}
-
 export interface GameEvaluation {
     status: GameStatus;
     underAttack: Position | null;
+}
+
+export interface BackendMoveRecord {
+    color: "white" | "black";
+    piece: "pawn"|"rook"|"knight"|"bishop"|"queen"|"king";
+    from: Position;
+    to: Position;
+    capturedPiece: "pawn"|"rook"|"knight"|"bishop"|"queen"|"king" | null;
+    promotion: "rook" | "knight" | "bishop" | "queen" | null;
+}
+
+export interface BackendGameSnapshot {
+    gameId: string;
+    playerColor: "white";
+    board: BoardType;
+    turn: "white" | "black";
+    status: "playing" | "check" | "checkmate" | "stalemate" | "resigned";
+    winner: "white" | "black" | "draw" | null;
+    castlingRights: CastlingRights;
+    enPassantTarget: Position | null;
+    ply: number;
+    moveHistory: BackendMoveRecord[];
+    createdAt: number;
+    updatedAt: number;
+}
+
+export interface StartGameResponse {
+    playerToken: string;
+    snapshot: BackendGameSnapshot;
+}
+
+export interface SubmitMovePayload {
+    from: Position;
+    to: Position;
+    promotion?: "rook" | "knight" | "bishop" | "queen";
+    expectedPly?: number;
+}
+
+export interface SubmitMoveResponse {
+    snapshot: BackendGameSnapshot;
+    playerMove: BackendMoveRecord;
+    botMove: BackendMoveRecord | null;
 }

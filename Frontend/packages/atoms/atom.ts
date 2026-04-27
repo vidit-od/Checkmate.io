@@ -68,3 +68,23 @@ export const SquareSize = atom<number>({
     key : "squareSize",
     default: getMaxSquareSize(),
 })
+
+export const backendSessionAtom = atom<{ gameId: string; playerToken: string } | null>({
+    key: "backendSessionAtom",
+    default: null,
+});
+
+export const currentPlyAtom = atom<number>({
+    key: "currentPlyAtom",
+    default: 0,
+});
+
+export const boardLoadingAtom = atom<boolean>({
+    key: "boardLoadingAtom",
+    default: true,
+});
+
+export const boardErrorAtom = atom<string | null>({
+    key: "boardErrorAtom",
+    default: null,
+});

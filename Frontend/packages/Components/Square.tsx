@@ -1,7 +1,7 @@
 import { SquareProps } from "../../types/chess";
 import Promotion from "./Promotion";
 import { useRecoilState } from "recoil";
-import { boardStateAtom, castlingRightsAtom, enPassantTargetAtom, gameStatusAtom, isPromotedAtom, SquareSize, turnAtom, underAttackAtom } from "../atoms/atom";
+import { SquareSize, gameStatusAtom } from "../atoms/atom";
 const Square: React.FC<SquareProps> = ({
     xPos,
     yPos,
@@ -19,42 +19,17 @@ const Square: React.FC<SquareProps> = ({
     focus,
     attacked,
     promotion,
+    promotionColor,
     onPromotion
 }) =>{
     const [size] = useRecoilState(SquareSize);
-    const [boardState, setBoardstate] = useRecoilState(boardStateAtom);
-    const [, setUnderAttack] = useRecoilState<{ x: number, y: number } | null>(underAttackAtom);
-    const [Turn] = useRecoilState(turnAtom);
-    const [isPromoted, setPromoted] = useRecoilState<{x:number, y:number} | null>(isPromotedAtom);
-    const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom);
-    const [castlingRights, setCastlingRights] = useRecoilState(castlingRightsAtom);
-    const [enPassantTarget, setEnPassantTarget] = useRecoilState(enPassantTargetAtom);
+    const [gameStatus] = useRecoilState(gameStatusAtom);
 
     const isGameOver = gameStatus === "checkmate" || gameStatus === "stalemate" || gameStatus === "Resigned";
 
     const handlePieceSelect = (pieceType: "rook" | "knight" | "bishop" | "queen")=>{
         if (isGameOver) return;
-        const resolution = onPromotion({
-            type: pieceType,
-            isPromoted,
-            boardState,
-            turn: Turn,
-            castlingRights,
-            enPassantTarget,
-        });
-
-        if (!resolution) return;
-
-        setBoardstate(resolution.boardState);
-        setPromoted(resolution.promotion);
-        setUnderAttack(resolution.underAttack);
-        setGameStatus(resolution.gameStatus);
-        setCastlingRights(resolution.castlingRights);
-        setEnPassantTarget(resolution.enPassantTarget);
-
-        if (resolution.winnerMessage) {
-            console.log(resolution.winnerMessage);
-        }
+        void onPromotion(pieceType);
     }
 
     const handleSquareClick = () => {
@@ -109,7 +84,7 @@ const Square: React.FC<SquareProps> = ({
             {hint && colorCode == "" && <div className=" absolute h-1/3 w-1/3 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-700 opacity-30 rounded-full"> </div>}
             {isDragTarget && <div className="absolute inset-0 border-[0.4em] border-gray-200/85 shadow-[0_0_18px_rgba(252,211,77,0.35)] pointer-events-none z-1"></div>}
 
-            {promotion != null && xPos == promotion.x && yPos == promotion.y && piece && <Promotion color = {piece.color} onPieceSelect={handlePieceSelect}/>}
+            {promotion != null && xPos == promotion.x && yPos == promotion.y && promotionColor && <Promotion color = {promotionColor} onPieceSelect={handlePieceSelect}/>}
         </div>
 
     )

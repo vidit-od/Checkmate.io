@@ -46,7 +46,7 @@ function ChessBoard(){
               isDesktopLayout
                 ? keepFixedDesktopWidths
                   ? "my-auto w-[300px] shrink-0 xl:w-[380px]"
-                  : "my-auto min-w-[300px] flex-1"
+                  : "my-auto min-w-[300px] max-w-[380px] flex-1"
                 : "my-6"
             }`}
             style={
