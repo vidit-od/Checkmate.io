@@ -10,7 +10,7 @@
 	"migrations": [
 		{
 			"new_sqlite_classes": [
-				"MyDob"
+				"ChessGame"
 			],
 			"tag": "v1"
 		}
@@ -18,8 +18,8 @@
 	"durable_objects": {
 		"bindings": [
 			{
-				"class_name": "MyDob",
-				"name": "MY_DURABLE_OBJECT"
+				"class_name": "ChessGame",
+				"name": "ChessGame"
 			}
 		]
 	},

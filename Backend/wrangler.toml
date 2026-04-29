@@ -1,0 +1,11 @@
+name = "chess-backend"
+main = "src/index.ts"
+compatibility_date = "2026-04-29"
+
+[[durable_objects.bindings]]
+name = "CHESS_GAME"
+class_name = "ChessGame"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["ChessGame"]

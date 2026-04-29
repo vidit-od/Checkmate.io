@@ -7,23 +7,23 @@ import { createInitialBoard } from "./chess/setup";
 import { GameError, toRpcFailure , toRpcSuccess} from "./chess/errors";
 
 interface Env {
-    CHESS_GAME : DurableObjectNamespace<ChessGame>
+    ChessGame : DurableObjectNamespace<ChessGame>
 }
 
 const app = new Hono<{Bindings: Env}>
 
-app.use('/api/v1/*',cors());
-app.route('/api/v1', IndexRouter);
+app.use('/api/v1/*', cors())
 app.use('/api/v1/*', async(c, next)=>{
+
     const gameId = crypto.randomUUID();
     const playerId = crypto.randomUUID();
-
-    const stub = c.env.CHESS_GAME.getByName(gameId);
+    const stub = c.env.ChessGame.getByName(gameId);
     // create a 1 Durable object corresponding to a Game
     await stub.initializeGame({gameId , playerId});
-
+    console.log(await stub.getGameState());
     await next();
 })
+app.route('/api/v1', IndexRouter);
 
 
 export class ChessGame extends DurableObject<Env> {
@@ -68,6 +68,13 @@ export class ChessGame extends DurableObject<Env> {
         }
 
         await this.ctx.storage.put("game_state", this.gameState);
+
+
+    }
+
+    async getGameState() : Promise<GameState | undefined>{
+        const res = await this.ctx.storage.get<GameState>("game_state");
+        return res;
     }
 }
 
